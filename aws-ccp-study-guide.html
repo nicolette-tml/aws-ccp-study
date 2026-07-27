@@ -574,12 +574,27 @@
      window.QUESTION_FILES, which the app reads on startup. Add a new .js file
      here (and in the questions/ folder) to grow the bank.
 
-     Standalone domain sets (revision-only — no paperId): -->
-<script src="questions/cloud-concepts.js"></script>
-<script src="questions/security-compliance.js"></script>
-<script src="questions/technology.js"></script>
-<script src="questions/billing-pricing.js"></script>
-<script src="questions/database.js"></script>
+     Standalone domain sets (revision-only — no paperId). One file per domain
+     code (see DOMAINS below); each pools into "Revision (mixed)" mode. -->
+<script src="questions/cld.js"></script>
+<script src="questions/iam.js"></script>
+<script src="questions/ec2.js"></script>
+<script src="questions/stg.js"></script>
+<script src="questions/elb.js"></script>
+<script src="questions/s3.js"></script>
+<script src="questions/dba.js"></script>
+<script src="questions/cmp.js"></script>
+<script src="questions/dep.js"></script>
+<script src="questions/glb.js"></script>
+<script src="questions/int.js"></script>
+<script src="questions/mon.js"></script>
+<script src="questions/vpc.js"></script>
+<script src="questions/sec.js"></script>
+<script src="questions/ml.js"></script>
+<script src="questions/acm.js"></script>
+<script src="questions/aid.js"></script>
+<script src="questions/oth.js"></script>
+<script src="questions/arc.js"></script>
 
 <!-- Practice papers (each file carries paperId/paperName; selectable as a
      whole paper AND pooled into revision). Add one <script> line per paper. -->
