@@ -404,6 +404,7 @@ window.QUESTION_FILES.push({
       id: "paper-05-027",
       domain: "OTH",
       topic: "cloud-directory",
+      deprecated: "Amazon Cloud Directory",
       type: "single",
       question: "Which of the below options is true of Amazon Cloud Directory?",
       options: [
@@ -511,6 +512,7 @@ window.QUESTION_FILES.push({
       id: "paper-05-034",
       domain: "DEP",
       topic: "opsworks",
+      deprecated: "AWS OpsWorks",
       type: "single",
       question: "Which AWS Service provides integration with Chef to automate the configuration of EC2 instances?",
       options: [

@@ -435,6 +435,7 @@
   .choice.missed{ border-color:#2f5c40; background:rgba(111,207,151,0.06); }
   .choice.missed .letter{ color:var(--success); border-color:#2f5c40; }
   .multi-hint{ font-family:var(--mono); font-size:10.5px; color:var(--cyan); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
+  .deprecated-badge{ font-size:12px; color:var(--amber); background:rgba(232,163,61,0.12); border:1px solid var(--amber-dim); border-radius:var(--radius); padding:6px 10px; margin-bottom:14px; }
   .choice.correct{ border-color:#2f5c40; background:rgba(111,207,151,0.1); color:var(--text); }
   .choice.correct .letter{ background:rgba(111,207,151,0.2); color:var(--success); border-color:#2f5c40; }
   .choice.incorrect{ border-color:#6b2e2e; background:rgba(235,87,87,0.09); color:var(--text); }
@@ -672,6 +673,7 @@ function normalizeQuestion(raw){
     choices,
     correct,               // array of correct indices
     explain: explain || '',
+    deprecated: raw.deprecated || null,
     readOnly: !!raw.readOnly
   };
 }
@@ -1224,6 +1226,7 @@ function renderQuizQuestion(){
     </div>
     <div class="question-card">
       ${isMulti ? `<div class="multi-hint">Select ${nAnswers} — then press Enter to check</div>` : ''}
+      ${q.deprecated ? `<div class="deprecated-badge">⚠️ ${escapeHtml(q.deprecated)} is deprecated — no longer on the current exam</div>` : ''}
       <p class="q-text">${escapeHtml(q.q)}</p>
       <div class="choices" id="choices">
         ${optionOrder.map(i=>`

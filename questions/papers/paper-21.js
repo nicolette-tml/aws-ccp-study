@@ -54,6 +54,7 @@ window.QUESTION_FILES.push({
       id: "paper-21-004",
       domain: "DEP",
       topic: "opsworks",
+      deprecated: "AWS OpsWorks",
       type: "single",
       question: "Which AWS service is used to automate configuration management using Chef and Puppet?",
       options: [

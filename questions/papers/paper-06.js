@@ -496,6 +496,7 @@ window.QUESTION_FILES.push({
       id: "paper-06-033",
       domain: "DEP",
       topic: "opsworks",
+      deprecated: "AWS OpsWorks",
       type: "single",
       question: "Which of the following AWS services uses Puppet to automate how EC2 instances are configured?",
       options: [
