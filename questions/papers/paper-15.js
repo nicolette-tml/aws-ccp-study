@@ -467,8 +467,9 @@ window.QUESTION_FILES.push({
       domain: "SEC",
       topic: "shared-responsibility",
       type: "single",
-      question: "Which of the following services falls under the responsibility of the customer to maintain operating system configuration, security patching, and networking? - A. Amazon RDS",
+      question: "Which of the following services falls under the responsibility of the customer to maintain operating system configuration, security patching, and networking?",
       options: [
+        "Amazon RDS",
         "Amazon EC2",
         "Amazon ElastiCache",
         "AWS Fargate"

@@ -712,8 +712,9 @@ window.QUESTION_FILES.push({
       domain: "SEC",
       topic: "shared-responsibility",
       type: "single",
-      question: "What is a user responsible for when running an application in the AWS Cloud? - A. Managing physical hardware",
+      question: "What is a user responsible for when running an application in the AWS Cloud?",
       options: [
+        "Managing physical hardware",
         "Updating the underlying hypervisor",
         "Providing a list of users approved for data center access",
         "Managing application software updates"
