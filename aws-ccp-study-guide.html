@@ -1059,6 +1059,7 @@ function renderQuizSetup(){
         <select id="qcount">
           ${[5,10,15,20,50].filter(n=>n<=Math.max(totalAvailable,5)||n===5).map(n=>`<option value="${n}" ${n===20?'selected':''}>${n}</option>`).join('')}
           <option value="ALL">All (${totalAvailable})</option>
+          <option value="UNLIMITED">Unlimited (up to ${totalAvailable}) — end anytime</option>
         </select>
       </div>
 
@@ -1203,12 +1204,13 @@ function startQuiz(){
   } else {
     const pool = bank.filter(q=>selectedDomains.has(q.domain));
     const countSel = document.getElementById('qcount').value;
-    const n = countSel === 'ALL' ? pool.length : Math.min(parseInt(countSel,10), pool.length);
+    const unlimited = countSel === 'UNLIMITED';
+    const n = countSel === 'ALL' || unlimited ? pool.length : Math.min(parseInt(countSel,10), pool.length);
     // Weighted by spaced repetition: unseen and due-incorrect questions
-    // dominate, mastered ones still appear occasionally. ("ALL" selects the
-    // whole pool anyway, just in weighted order.)
+    // dominate, mastered ones still appear occasionally. ("ALL"/"UNLIMITED"
+    // select the whole pool anyway, just in weighted order.)
     questions = weightedSample(pool, n);
-    meta = { mode:'revision', domains: Array.from(selectedDomains) };
+    meta = { mode:'revision', domains: Array.from(selectedDomains), unlimited };
   }
   quizState = {
     questions,
@@ -1217,6 +1219,7 @@ function startQuiz(){
     domains: meta.domains,
     mode: meta.mode,
     paperName: meta.paperName || null,
+    unlimited: !!meta.unlimited,
     answeredCurrent: false
   };
   renderQuizQuestion();
@@ -1236,8 +1239,8 @@ function renderQuizQuestion(){
 
   wrap.innerHTML = `
     <div class="quiz-header">
-      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <div class="q-counter">${st.index+1} / ${st.questions.length}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${st.unlimited ? 100 : pct}%"></div></div>
+      <div class="q-counter">${st.unlimited ? `Q${st.index+1} · unlimited (max ${st.questions.length})` : `${st.index+1} / ${st.questions.length}`}</div>
     </div>
     <div class="question-card">
       ${isMulti ? `<div class="multi-hint">Select ${nAnswers} — then press Enter to check</div>` : ''}
@@ -1258,8 +1261,9 @@ function renderQuizQuestion(){
       <div class="quiz-nav">
         <div class="quiz-nav-left">
           ${isMulti ? `<button class="primary-btn" id="check-btn" disabled onclick="submitMulti()">Check answer</button>` : ''}
+          ${st.unlimited ? `<button class="ghost-btn" style="flex:none; padding:8px 14px;" onclick="finishQuiz()">End session</button>` : ''}
         </div>
-        <button class="primary-btn" id="next-btn" disabled onclick="nextQuestion()">${st.index === st.questions.length-1 ? 'Finish' : 'Next'} →</button>
+        <button class="primary-btn" id="next-btn" disabled onclick="nextQuestion()">${st.unlimited || st.index !== st.questions.length-1 ? 'Next' : 'Finish'} →</button>
       </div>
     </div>
   `;
