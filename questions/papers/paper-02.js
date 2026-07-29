@@ -164,7 +164,7 @@ window.QUESTION_FILES.push({
       options: [
         "Invest heavily in architecting your environment, as it is not easy to change your design later.",
         "Use AWS reservations to reduce costs when testing your production environment.",
-        "Automate wherever possible to make architectural (© ) experimentation easier.",
+        "Automate wherever possible to make architectural experimentation easier.",
         "Provision a large compute capacity to handle any spikes in load"
       ],
       correctAnswer: [2],

@@ -762,7 +762,7 @@ window.QUESTION_FILES.push({
       options: [
         "Use the AWS Pricing Calculator service to monitor the costs incurred by each department.",
         "Use Amazon Aurora to forecast AWS spending based on usage.",
-        "Apply cost allocation tags to segment AWS costs by different e projects and departments.",
+        "Apply cost allocation tags to segment AWS costs by different projects and departments.",
         "Configure AWS Price List API to receive billing updates for each department automatically."
       ],
       correctAnswer: [2],
