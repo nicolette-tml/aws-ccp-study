@@ -134,37 +134,6 @@
       padding-left: 10px;
     }
 
-    nav.tabs {
-      display: flex;
-      gap: 2px;
-      margin-left: auto;
-      background: var(--panel-alt);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 3px;
-    }
-
-    nav.tabs button {
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-family: var(--mono);
-      padding: 7px 16px;
-      border-radius: 6px;
-      transition: all .15s ease;
-    }
-
-    nav.tabs button.active {
-      background: var(--panel-raised);
-      color: var(--amber);
-      box-shadow: inset 0 0 0 1px var(--border);
-    }
-
-    nav.tabs button:hover:not(.active) {
-      color: var(--text);
-    }
-
     .view {
       display: none;
       flex: 1;
@@ -177,75 +146,20 @@
       min-height: 0;
     }
 
-    /* ---------- Notes view ---------- */
-    #view-notes {
-      display: none;
-    }
-
-    #view-notes.active {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-    }
-
-    .notes-sidebar {
-      border-right: 1px solid var(--border);
-      background: rgba(16, 31, 48, 0.5);
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .sidebar-head {
-      padding: 14px 14px 10px;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .search-box {
-      width: 100%;
-      background: var(--panel);
+    .ghost-btn {
+      flex: 1;
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      padding: 8px 10px;
-      font-size: 12.5px;
-      margin-bottom: 8px;
-    }
-
-    .search-box:focus {
-      outline: none;
-      border-color: var(--cyan-dim);
-    }
-
-    .new-note-btn {
-      width: 100%;
-      background: var(--amber);
-      color: #241705;
-      border: none;
-      font-weight: 700;
-      font-size: 12.5px;
-      padding: 8px 10px;
-      border-radius: var(--radius);
-      letter-spacing: 0.02em;
-    }
-
-    .new-note-btn:hover {
-      filter: brightness(1.08);
-    }
-
-    .domain-group {
-      margin-top: 4px;
-    }
-
-    .domain-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px 4px;
-      font-family: var(--mono);
-      font-size: 10.5px;
-      letter-spacing: 0.08em;
       color: var(--text-muted);
-      text-transform: uppercase;
+      font-size: 11.5px;
+      font-family: var(--mono);
+      padding: 7px 6px;
+      border-radius: var(--radius);
+    }
+
+    .ghost-btn:hover {
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
     }
 
     .badge {
@@ -376,273 +290,6 @@
       background: rgba(130, 180, 210, 0.14);
       color: #8bbcd6;
       border: 1px solid #315466;
-    }
-
-    .note-list {
-      list-style: none;
-      margin: 0;
-      padding: 0 8px 12px;
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    .note-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 8px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-bottom: 1px;
-    }
-
-    .note-item:hover {
-      background: var(--panel-alt);
-    }
-
-    .note-item.selected {
-      background: var(--panel-raised);
-      color: var(--text);
-      box-shadow: inset 2px 0 0 var(--amber);
-    }
-
-    .note-item .title {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1;
-    }
-
-    .note-item .del {
-      opacity: 0;
-      color: var(--text-muted);
-      font-size: 14px;
-      border: none;
-      background: none;
-      padding: 2px 4px;
-    }
-
-    .note-item:hover .del {
-      opacity: 1;
-    }
-
-    .note-item .del:hover {
-      color: var(--error);
-    }
-
-    .empty-hint {
-      padding: 16px;
-      color: var(--text-muted);
-      font-size: 12.5px;
-      line-height: 1.5;
-    }
-
-    .sidebar-foot {
-      border-top: 1px solid var(--border-soft);
-      padding: 10px 14px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .ghost-btn {
-      flex: 1;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 11.5px;
-      font-family: var(--mono);
-      padding: 7px 6px;
-      border-radius: var(--radius);
-    }
-
-    .ghost-btn:hover {
-      border-color: var(--cyan-dim);
-      color: var(--cyan);
-    }
-
-    .editor-pane {
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .editor-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 18px;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .note-title-input {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 700;
-      font-family: var(--sans);
-      flex: 1;
-      padding: 4px 0;
-    }
-
-    .note-title-input:focus {
-      outline: none;
-    }
-
-    .domain-select {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      font-size: 12px;
-      font-family: var(--mono);
-      padding: 6px 8px;
-      border-radius: var(--radius);
-    }
-
-    .save-state {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      min-width: 70px;
-      text-align: right;
-    }
-
-    .editor-body {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 0;
-    }
-
-    .editor-col,
-    .preview-col {
-      min-height: 0;
-      overflow-y: auto;
-    }
-
-    .editor-col {
-      border-right: 1px solid var(--border-soft);
-    }
-
-    textarea#markdown-input {
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      font-family: var(--mono);
-      font-size: 13.5px;
-      line-height: 1.65;
-      padding: 20px;
-      resize: none;
-    }
-
-    textarea#markdown-input:focus {
-      outline: none;
-    }
-
-    .preview-col {
-      padding: 20px 28px;
-    }
-
-    .preview-col h1,
-    .preview-col h2,
-    .preview-col h3 {
-      font-family: var(--sans);
-    }
-
-    .preview-col h1 {
-      font-size: 22px;
-      border-bottom: 1px solid var(--border-soft);
-      padding-bottom: 8px;
-      margin-top: 0;
-    }
-
-    .preview-col h2 {
-      font-size: 18px;
-      color: var(--amber);
-      margin-top: 28px;
-    }
-
-    .preview-col h3 {
-      font-size: 15px;
-      color: var(--cyan);
-      margin-top: 20px;
-    }
-
-    .preview-col p {
-      line-height: 1.7;
-      color: var(--text-dim);
-      font-size: 14px;
-    }
-
-    .preview-col code {
-      background: var(--panel-alt);
-      border: 1px solid var(--border-soft);
-      padding: 1px 5px;
-      border-radius: 4px;
-      font-family: var(--mono);
-      font-size: 12.5px;
-      color: var(--amber);
-    }
-
-    .preview-col pre {
-      background: var(--panel-alt);
-      border: 1px solid var(--border-soft);
-      border-radius: var(--radius);
-      padding: 12px 14px;
-      overflow-x: auto;
-    }
-
-    .preview-col pre code {
-      background: none;
-      border: none;
-      padding: 0;
-      color: var(--text-dim);
-    }
-
-    .preview-col blockquote {
-      border-left: 3px solid var(--cyan-dim);
-      margin: 14px 0;
-      padding: 2px 14px;
-      color: var(--text-muted);
-    }
-
-    .preview-col ul,
-    .preview-col ol {
-      color: var(--text-dim);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .preview-col hr {
-      border: none;
-      border-top: 1px solid var(--border-soft);
-      margin: 24px 0;
-    }
-
-    .preview-col a {
-      color: var(--cyan);
-    }
-
-    .empty-editor {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: var(--text-muted);
-      gap: 12px;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .empty-editor .glyph {
-      font-family: var(--mono);
-      font-size: 28px;
-      color: var(--border);
     }
 
     /* ---------- Quiz view ---------- */
@@ -1305,23 +952,6 @@
       display: none;
     }
 
-    @media (max-width: 860px) {
-      #view-notes.active {
-        grid-template-columns: 1fr;
-      }
-
-      .notes-sidebar {
-        display: none;
-      }
-
-      .editor-body {
-        grid-template-columns: 1fr;
-      }
-
-      .preview-col {
-        display: none;
-      }
-    }
   </style>
 </head>
 
@@ -1333,33 +963,10 @@
         <div class="name">CCP // STUDY CONSOLE</div>
         <div class="sub">AWS Certified Cloud Practitioner</div>
       </div>
-      <nav class="tabs">
-        <button id="tab-notes" onclick="switchView('notes')">Notes</button>
-        <button id="tab-quiz" class="active" onclick="switchView('quiz')">Quiz</button>
-      </nav>
     </header>
 
-    <!-- NOTES VIEW -->
-    <div class="view" id="view-notes">
-      <aside class="notes-sidebar">
-        <div class="sidebar-head">
-          <input class="search-box" id="note-search" placeholder="Search notes..." oninput="renderNoteList()">
-          <button class="new-note-btn" onclick="createNote()">+ New note</button>
-        </div>
-        <div id="note-list-container" style="flex:1; overflow-y:auto;"></div>
-        <div class="sidebar-foot">
-          <button class="ghost-btn" onclick="exportNotes()">Export</button>
-          <button class="ghost-btn" onclick="document.getElementById('import-notes-file').click()">Import</button>
-          <input type="file" id="import-notes-file" accept="application/json" onchange="importNotes(event)">
-        </div>
-      </aside>
-      <section class="editor-pane" id="editor-pane">
-        <!-- filled by JS -->
-      </section>
-    </div>
-
     <!-- QUIZ VIEW -->
-    <div class="view" id="view-quiz">
+    <div class="view active" id="view-quiz">
       <div class="quiz-wrap" id="quiz-wrap"></div>
     </div>
   </div>
@@ -1427,7 +1034,6 @@
     /* =========================================================
        DATA LAYER
     ========================================================= */
-    const LS_NOTES = 'ccp_notes_v1';
     const LS_BANK = 'ccp_bank_v1';
     const LS_HISTORY = 'ccp_history_v1';
     const LS_STATS = 'ccp_stats_v1';
@@ -1461,11 +1067,6 @@
     function cryptoId() {
       return 'q_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
     }
-
-    function loadNotes() {
-      try { return JSON.parse(localStorage.getItem(LS_NOTES)) || []; } catch (e) { return []; }
-    }
-    function saveNotes(notes) { localStorage.setItem(LS_NOTES, JSON.stringify(notes)); }
 
     /* Normalize a question into the app's internal shape. Accepts both the unified
        file schema (question/options/correctAnswer/type/topic/explanation) and the
@@ -1556,236 +1157,13 @@
     function loadStats() { try { return JSON.parse(localStorage.getItem(LS_STATS)) || {}; } catch (e) { return {}; } }
     function saveStats(s) { localStorage.setItem(LS_STATS, JSON.stringify(s)); }
 
-    let notes = loadNotes();
     let bank = loadBank();
     let history = loadHistory();
     let stats = loadStats();
 
-    /* =========================================================
-       TINY MARKDOWN RENDERER (no external deps, fully offline)
-    ========================================================= */
+    /* Shared HTML-escaping helper used throughout the quiz UI. */
     function escapeHtml(str) {
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-    function renderMarkdown(src) {
-      if (!src) return '';
-      const lines = src.replace(/\r\n/g, '\n').split('\n');
-      let html = '';
-      let inCode = false, codeBuf = [];
-      let listType = null; // 'ul' | 'ol'
-      let paraBuf = [];
-
-      function flushPara() {
-        if (paraBuf.length) {
-          html += '<p>' + inlineMd(paraBuf.join(' ')) + '</p>';
-          paraBuf = [];
-        }
-      }
-      function closeList() {
-        if (listType) { html += listType === 'ul' ? '</ul>' : '</ol>'; listType = null; }
-      }
-
-      for (let raw of lines) {
-        const line = raw;
-        if (/^```/.test(line.trim())) {
-          if (!inCode) { flushPara(); closeList(); inCode = true; codeBuf = []; }
-          else { html += '<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>'; inCode = false; }
-          continue;
-        }
-        if (inCode) { codeBuf.push(line); continue; }
-
-        if (line.trim() === '') { flushPara(); closeList(); continue; }
-
-        let m;
-        if ((m = line.match(/^(#{1,6})\s+(.*)$/))) {
-          flushPara(); closeList();
-          const lvl = m[1].length;
-          html += `<h${lvl}>${inlineMd(m[2])}</h${lvl}>`;
-          continue;
-        }
-        if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
-          flushPara(); closeList();
-          html += '<hr>';
-          continue;
-        }
-        if ((m = line.match(/^>\s?(.*)$/))) {
-          flushPara(); closeList();
-          html += `<blockquote>${inlineMd(m[1])}</blockquote>`;
-          continue;
-        }
-        if ((m = line.match(/^\s*[-*]\s+(.*)$/))) {
-          flushPara();
-          if (listType !== 'ul') { closeList(); html += '<ul>'; listType = 'ul'; }
-          html += `<li>${inlineMd(m[1])}</li>`;
-          continue;
-        }
-        if ((m = line.match(/^\s*\d+\.\s+(.*)$/))) {
-          flushPara();
-          if (listType !== 'ol') { closeList(); html += '<ol>'; listType = 'ol'; }
-          html += `<li>${inlineMd(m[1])}</li>`;
-          continue;
-        }
-        closeList();
-        paraBuf.push(line);
-      }
-      flushPara(); closeList();
-      if (inCode) { html += '<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>'; }
-      return html;
-    }
-    function inlineMd(text) {
-      let t = escapeHtml(text);
-      t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
-      t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-      t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-      t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-      return t;
-    }
-
-    /* =========================================================
-       VIEW SWITCHING
-    ========================================================= */
-    function switchView(name) {
-      document.getElementById('view-notes').classList.toggle('active', name === 'notes');
-      document.getElementById('view-quiz').classList.toggle('active', name === 'quiz');
-      document.getElementById('tab-notes').classList.toggle('active', name === 'notes');
-      document.getElementById('tab-quiz').classList.toggle('active', name === 'quiz');
-      if (name === 'notes') renderNoteList();
-      if (name === 'quiz') renderQuizSetup();
-    }
-
-    /* =========================================================
-       NOTES LOGIC
-    ========================================================= */
-    let currentNoteId = null;
-    let saveTimer = null;
-
-    function renderNoteList() {
-      const container = document.getElementById('note-list-container');
-      const q = document.getElementById('note-search').value.trim().toLowerCase();
-      const filtered = notes.filter(n => !q || n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
-
-      if (notes.length === 0) {
-        container.innerHTML = `<div class="empty-hint">No notes yet. Click <b>+ New note</b> to start capturing what you're studying.</div>`;
-        return;
-      }
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="empty-hint">No notes match "${escapeHtml(q)}".</div>`;
-        return;
-      }
-
-      let out = '';
-      DOMAINS.forEach(d => {
-        const group = filtered.filter(n => n.domain === d.code).sort((a, b) => b.updated - a.updated);
-        if (group.length === 0) return;
-        out += `<div class="domain-group"><div class="domain-label"><span class="badge ${d.code}">${d.code}</span>${d.name}</div><ul class="note-list">`;
-        group.forEach(n => {
-          out += `<li class="note-item ${n.id === currentNoteId ? 'selected' : ''}" onclick="openNote('${n.id}')">
-        <span class="title">${escapeHtml(n.title || 'Untitled')}</span>
-        <button class="del" title="Delete note" onclick="event.stopPropagation(); deleteNote('${n.id}')">✕</button>
-      </li>`;
-        });
-        out += `</ul></div>`;
-      });
-      container.innerHTML = out;
-    }
-
-    function createNote() {
-      const note = { id: cryptoId(), title: 'Untitled note', domain: 'OTH', body: '', updated: Date.now() };
-      notes.unshift(note);
-      saveNotes(notes);
-      currentNoteId = note.id;
-      renderNoteList();
-      renderEditor();
-      setTimeout(() => { const el = document.getElementById('note-title-input'); if (el) { el.focus(); el.select(); } }, 30);
-    }
-
-    function openNote(id) {
-      currentNoteId = id;
-      renderNoteList();
-      renderEditor();
-    }
-
-    function deleteNote(id) {
-      const n = notes.find(n => n.id === id);
-      if (!n) return;
-      if (!confirm(`Delete "${n.title || 'Untitled'}"? This can't be undone.`)) return;
-      notes = notes.filter(n => n.id !== id);
-      saveNotes(notes);
-      if (currentNoteId === id) currentNoteId = null;
-      renderNoteList();
-      renderEditor();
-    }
-
-    function renderEditor() {
-      const pane = document.getElementById('editor-pane');
-      const note = notes.find(n => n.id === currentNoteId);
-      if (!note) {
-        pane.innerHTML = `<div class="empty-editor">
-      <div class="glyph">{ }</div>
-      <div>Select a note, or create a new one, to start writing in Markdown.</div>
-    </div>`;
-        return;
-      }
-      pane.innerHTML = `
-    <div class="editor-toolbar">
-      <input class="note-title-input" id="note-title-input" value="${escapeHtml(note.title)}" placeholder="Note title" oninput="updateNoteField('title', this.value)">
-      <select class="domain-select" onchange="updateNoteField('domain', this.value)">
-        ${DOMAINS.map(d => `<option value="${d.code}" ${d.code === note.domain ? 'selected' : ''}>${d.code} — ${d.name}</option>`).join('')}
-      </select>
-      <span class="save-state" id="save-state">saved</span>
-    </div>
-    <div class="editor-body">
-      <div class="editor-col"><textarea id="markdown-input" placeholder="# Start writing...">${escapeHtml(note.body)}</textarea></div>
-      <div class="preview-col" id="preview-col">${renderMarkdown(note.body) || '<p style="color:var(--text-muted)">Preview appears here.</p>'}</div>
-    </div>
-  `;
-      document.getElementById('markdown-input').addEventListener('input', (e) => {
-        updateNoteField('body', e.target.value);
-        document.getElementById('preview-col').innerHTML = renderMarkdown(e.target.value) || '<p style="color:var(--text-muted)">Preview appears here.</p>';
-      });
-    }
-
-    function updateNoteField(field, value) {
-      const note = notes.find(n => n.id === currentNoteId);
-      if (!note) return;
-      note[field] = value;
-      note.updated = Date.now();
-      const stateEl = document.getElementById('save-state');
-      if (stateEl) stateEl.textContent = 'saving…';
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(() => {
-        saveNotes(notes);
-        if (field === 'title' || field === 'domain') renderNoteList();
-        if (stateEl) stateEl.textContent = 'saved';
-      }, 400);
-    }
-
-    function exportNotes() {
-      downloadJson(notes, 'ccp-notes-export.json');
-      showToast('Notes exported');
-    }
-    function importNotes(evt) {
-      const file = evt.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const incoming = JSON.parse(reader.result);
-          if (!Array.isArray(incoming)) throw new Error('bad format');
-          const existingIds = new Set(notes.map(n => n.id));
-          let added = 0;
-          incoming.forEach(n => {
-            if (n && n.id && !existingIds.has(n.id)) { notes.push(n); added++; }
-          });
-          saveNotes(notes);
-          renderNoteList();
-          showToast(`Imported ${added} note(s)`);
-        } catch (e) {
-          showToast('Import failed — invalid file');
-        }
-        evt.target.value = '';
-      };
-      reader.readAsText(file);
     }
 
     /* =========================================================
@@ -2364,10 +1742,7 @@
     /* =========================================================
        INIT
     ========================================================= */
-    renderNoteList();
-    renderEditor();
     renderQuizSetup();
-    switchView('quiz');   // open on the Quiz tab by default
   </script>
 </body>
 
