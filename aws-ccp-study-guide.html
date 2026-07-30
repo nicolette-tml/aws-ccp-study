@@ -1,935 +1,1736 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CCP Quiz">
-<title>CCP // Study Console</title>
-<style>
-  :root{
-    --bg:#0B1622;
-    --panel:#101F30;
-    --panel-alt:#16283C;
-    --panel-raised:#1B3049;
-    --border:#223951;
-    --border-soft:#1A2C42;
-    --text:#E8EDF2;
-    --text-dim:#B7C6D6;
-    --text-muted:#7E97AF;
-    --amber:#E8A33D;
-    --amber-dim:#8A6427;
-    --cyan:#5FB3B3;
-    --cyan-dim:#2E5C5C;
-    --success:#6FCF97;
-    --error:#EB5757;
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --radius: 6px;
-  }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(232,163,61,0.06), transparent),
-      radial-gradient(ellipse 900px 600px at 100% 10%, rgba(95,179,179,0.06), transparent),
-      var(--bg);
-    color:var(--text);
-    font-family:var(--sans);
-    -webkit-font-smoothing:antialiased;
-  }
-  ::selection{ background: rgba(232,163,61,0.3); }
-  ::-webkit-scrollbar{ width:10px; height:10px; }
-  ::-webkit-scrollbar-track{ background:transparent; }
-  ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:10px; }
-  ::-webkit-scrollbar-thumb:hover{ background:var(--amber-dim); }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CCP Quiz">
+  <title>CCP // Study Console</title>
+  <style>
+    :root {
+      --bg: #0B1622;
+      --panel: #101F30;
+      --panel-alt: #16283C;
+      --panel-raised: #1B3049;
+      --border: #223951;
+      --border-soft: #1A2C42;
+      --text: #E8EDF2;
+      --text-dim: #B7C6D6;
+      --text-muted: #7E97AF;
+      --amber: #E8A33D;
+      --amber-dim: #8A6427;
+      --cyan: #5FB3B3;
+      --cyan-dim: #2E5C5C;
+      --success: #6FCF97;
+      --error: #EB5757;
+      --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --radius: 6px;
+    }
 
-  a{ color:var(--cyan); }
-  button{ font-family:var(--sans); cursor:pointer; }
-  input,textarea,select{ font-family:var(--sans); }
+    * {
+      box-sizing: border-box;
+    }
 
-  /* ---------- Shell ---------- */
-  .shell{
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-  }
-  header.topbar{
-    display:flex;
-    align-items:center;
-    gap:20px;
-    padding:14px 22px;
-    border-bottom:1px solid var(--border);
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-    position:sticky; top:0; z-index:50;
-  }
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-family:var(--mono);
-    letter-spacing:0.02em;
-  }
-  .brand .dot{
-    width:9px; height:9px; border-radius:50%;
-    background:var(--amber);
-    box-shadow:0 0 12px rgba(232,163,61,0.8);
-  }
-  .brand .name{ font-weight:700; font-size:14.5px; }
-  .brand .sub{ color:var(--text-muted); font-size:12px; border-left:1px solid var(--border); padding-left:10px; }
+    html,
+    body {
+      height: 100%;
+    }
 
-  nav.tabs{
-    display:flex;
-    gap:2px;
-    margin-left:auto;
-    background:var(--panel-alt);
-    border:1px solid var(--border);
-    border-radius:8px;
-    padding:3px;
-  }
-  nav.tabs button{
-    border:none;
-    background:transparent;
-    color:var(--text-muted);
-    font-size:13px;
-    font-family:var(--mono);
-    padding:7px 16px;
-    border-radius:6px;
-    transition:all .15s ease;
-  }
-  nav.tabs button.active{
-    background:var(--panel-raised);
-    color:var(--amber);
-    box-shadow:inset 0 0 0 1px var(--border);
-  }
-  nav.tabs button:hover:not(.active){ color:var(--text); }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(232, 163, 61, 0.06), transparent),
+        radial-gradient(ellipse 900px 600px at 100% 10%, rgba(95, 179, 179, 0.06), transparent),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .view{ display:none; flex:1; min-height:0; }
-  .view.active{ display:flex; flex:1; min-height:0; }
+    ::selection {
+      background: rgba(232, 163, 61, 0.3);
+    }
 
-  /* ---------- Notes view ---------- */
-  #view-notes{ display:none; }
-  #view-notes.active{ display:grid; grid-template-columns: 280px 1fr; }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
 
-  .notes-sidebar{
-    border-right:1px solid var(--border);
-    background:rgba(16,31,48,0.5);
-    display:flex;
-    flex-direction:column;
-    min-height:0;
-  }
-  .sidebar-head{
-    padding:14px 14px 10px;
-    border-bottom:1px solid var(--border-soft);
-  }
-  .search-box{
-    width:100%;
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    color:var(--text);
-    padding:8px 10px;
-    font-size:12.5px;
-    margin-bottom:8px;
-  }
-  .search-box:focus{ outline:none; border-color:var(--cyan-dim); }
-  .new-note-btn{
-    width:100%;
-    background:var(--amber);
-    color:#241705;
-    border:none;
-    font-weight:700;
-    font-size:12.5px;
-    padding:8px 10px;
-    border-radius:var(--radius);
-    letter-spacing:0.02em;
-  }
-  .new-note-btn:hover{ filter:brightness(1.08); }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-  .domain-group{ margin-top:4px; }
-  .domain-label{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 14px 4px;
-    font-family:var(--mono);
-    font-size:10.5px;
-    letter-spacing:0.08em;
-    color:var(--text-muted);
-    text-transform:uppercase;
-  }
-  .badge{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:22px; height:16px;
-    border-radius:4px;
-    font-family:var(--mono);
-    font-size:9.5px;
-    font-weight:700;
-    letter-spacing:0.02em;
-    flex-shrink:0;
-  }
-  /* One badge color per TOC chapter (19 codes), spread across the hue wheel so
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--amber-dim);
+    }
+
+    a {
+      color: var(--cyan);
+    }
+
+    button {
+      font-family: var(--sans);
+      cursor: pointer;
+    }
+
+    input,
+    textarea,
+    select {
+      font-family: var(--sans);
+    }
+
+    /* ---------- Shell ---------- */
+    .shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header.topbar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+    }
+
+    .brand .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 12px rgba(232, 163, 61, 0.8);
+    }
+
+    .brand .name {
+      font-weight: 700;
+      font-size: 14.5px;
+    }
+
+    .brand .sub {
+      color: var(--text-muted);
+      font-size: 12px;
+      border-left: 1px solid var(--border);
+      padding-left: 10px;
+    }
+
+    nav.tabs {
+      display: flex;
+      gap: 2px;
+      margin-left: auto;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    nav.tabs button {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: var(--mono);
+      padding: 7px 16px;
+      border-radius: 6px;
+      transition: all .15s ease;
+    }
+
+    nav.tabs button.active {
+      background: var(--panel-raised);
+      color: var(--amber);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+
+    nav.tabs button:hover:not(.active) {
+      color: var(--text);
+    }
+
+    .view {
+      display: none;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .view.active {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ---------- Notes view ---------- */
+    #view-notes {
+      display: none;
+    }
+
+    #view-notes.active {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    .notes-sidebar {
+      border-right: 1px solid var(--border);
+      background: rgba(16, 31, 48, 0.5);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .sidebar-head {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .search-box {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 12.5px;
+      margin-bottom: 8px;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--cyan-dim);
+    }
+
+    .new-note-btn {
+      width: 100%;
+      background: var(--amber);
+      color: #241705;
+      border: none;
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      letter-spacing: 0.02em;
+    }
+
+    .new-note-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    .domain-group {
+      margin-top: 4px;
+    }
+
+    .domain-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px 4px;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 16px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+
+    /* One badge color per TOC chapter (19 codes), spread across the hue wheel so
      every chapter reads distinctly in the dark theme. */
-  .badge.CLD{ background:rgba(95,179,179,0.15);  color:#7fd0d0; border:1px solid #2f5f5f; }
-  .badge.IAM{ background:rgba(235,87,87,0.13);   color:#f08a8a; border:1px solid #6b2e2e; }
-  .badge.EC2{ background:rgba(232,163,61,0.15);  color:#e8a33d; border:1px solid #6b4f20; }
-  .badge.STG{ background:rgba(228,196,90,0.14);  color:#e6cf6a; border:1px solid #6a5c22; }
-  .badge.ELB{ background:rgba(155,207,111,0.13); color:#a9dd7f; border:1px solid #40602f; }
-  .badge.S3 { background:rgba(111,207,151,0.13); color:#6fcf97; border:1px solid #2f5c40; }
-  .badge.DBA{ background:rgba(90,200,180,0.14);  color:#66d0bc; border:1px solid #245a50; }
-  .badge.CMP{ background:rgba(90,170,232,0.14);  color:#6fb0ef; border:1px solid #274d6b; }
-  .badge.DEP{ background:rgba(120,150,235,0.14); color:#8ba3f0; border:1px solid #33437a; }
-  .badge.GLB{ background:rgba(120,196,220,0.14); color:#7fc8dc; border:1px solid #2c5460; }
-  .badge.INT{ background:rgba(155,124,232,0.15); color:#b49cf0; border:1px solid #4a3a7a; }
-  .badge.MON{ background:rgba(190,130,225,0.14); color:#c690e0; border:1px solid #563a6b; }
-  .badge.VPC{ background:rgba(225,120,190,0.14); color:#e690c4; border:1px solid #6b3355; }
-  .badge.SEC{ background:rgba(235,110,120,0.14); color:#f0868f; border:1px solid #6b3035; }
-  .badge.ML { background:rgba(220,150,90,0.14);  color:#e0a066; border:1px solid #6b4d2c; }
-  .badge.ACM{ background:rgba(140,200,120,0.14); color:#9dd682; border:1px solid #3d5c30; }
-  .badge.AID{ background:rgba(200,120,220,0.14); color:#d08ce0; border:1px solid #5c356b; }
-  .badge.OTH{ background:rgba(183,198,214,0.1);  color:#b7c6d6; border:1px solid var(--border); }
-  .badge.ARC{ background:rgba(130,180,210,0.14); color:#8bbcd6; border:1px solid #315466; }
+    .badge.CLD {
+      background: rgba(95, 179, 179, 0.15);
+      color: #7fd0d0;
+      border: 1px solid #2f5f5f;
+    }
 
-  .note-list{ list-style:none; margin:0; padding:0 8px 12px; flex:1; overflow-y:auto; }
-  .note-item{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:8px 8px;
-    border-radius:var(--radius);
-    cursor:pointer;
-    font-size:13px;
-    color:var(--text-dim);
-    margin-bottom:1px;
-  }
-  .note-item:hover{ background:var(--panel-alt); }
-  .note-item.selected{ background:var(--panel-raised); color:var(--text); box-shadow:inset 2px 0 0 var(--amber); }
-  .note-item .title{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
-  .note-item .del{
-    opacity:0; color:var(--text-muted); font-size:14px; border:none; background:none; padding:2px 4px;
-  }
-  .note-item:hover .del{ opacity:1; }
-  .note-item .del:hover{ color:var(--error); }
-  .empty-hint{ padding:16px; color:var(--text-muted); font-size:12.5px; line-height:1.5; }
+    .badge.IAM {
+      background: rgba(235, 87, 87, 0.13);
+      color: #f08a8a;
+      border: 1px solid #6b2e2e;
+    }
 
-  .sidebar-foot{
-    border-top:1px solid var(--border-soft);
-    padding:10px 14px;
-    display:flex;
-    gap:8px;
-  }
-  .ghost-btn{
-    flex:1;
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--text-muted);
-    font-size:11.5px;
-    font-family:var(--mono);
-    padding:7px 6px;
-    border-radius:var(--radius);
-  }
-  .ghost-btn:hover{ border-color:var(--cyan-dim); color:var(--cyan); }
+    .badge.EC2 {
+      background: rgba(232, 163, 61, 0.15);
+      color: #e8a33d;
+      border: 1px solid #6b4f20;
+    }
 
-  .editor-pane{
-    display:flex;
-    flex-direction:column;
-    min-height:0;
-  }
-  .editor-toolbar{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 18px;
-    border-bottom:1px solid var(--border-soft);
-  }
-  .note-title-input{
-    background:transparent;
-    border:none;
-    color:var(--text);
-    font-size:16px;
-    font-weight:700;
-    font-family:var(--sans);
-    flex:1;
-    padding:4px 0;
-  }
-  .note-title-input:focus{ outline:none; }
-  .domain-select{
-    background:var(--panel);
-    border:1px solid var(--border);
-    color:var(--text-dim);
-    font-size:12px;
-    font-family:var(--mono);
-    padding:6px 8px;
-    border-radius:var(--radius);
-  }
-  .save-state{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--text-muted);
-    min-width:70px;
-    text-align:right;
-  }
+    .badge.STG {
+      background: rgba(228, 196, 90, 0.14);
+      color: #e6cf6a;
+      border: 1px solid #6a5c22;
+    }
 
-  .editor-body{
-    flex:1;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    min-height:0;
-  }
-  .editor-col, .preview-col{
-    min-height:0;
-    overflow-y:auto;
-  }
-  .editor-col{ border-right:1px solid var(--border-soft); }
-  textarea#markdown-input{
-    width:100%; height:100%;
-    background:transparent;
-    border:none;
-    color:var(--text-dim);
-    font-family:var(--mono);
-    font-size:13.5px;
-    line-height:1.65;
-    padding:20px;
-    resize:none;
-  }
-  textarea#markdown-input:focus{ outline:none; }
-  .preview-col{ padding:20px 28px; }
-  .preview-col h1,.preview-col h2,.preview-col h3{ font-family:var(--sans); }
-  .preview-col h1{ font-size:22px; border-bottom:1px solid var(--border-soft); padding-bottom:8px; margin-top:0;}
-  .preview-col h2{ font-size:18px; color:var(--amber); margin-top:28px; }
-  .preview-col h3{ font-size:15px; color:var(--cyan); margin-top:20px; }
-  .preview-col p{ line-height:1.7; color:var(--text-dim); font-size:14px; }
-  .preview-col code{ background:var(--panel-alt); border:1px solid var(--border-soft); padding:1px 5px; border-radius:4px; font-family:var(--mono); font-size:12.5px; color:var(--amber); }
-  .preview-col pre{ background:var(--panel-alt); border:1px solid var(--border-soft); border-radius:var(--radius); padding:12px 14px; overflow-x:auto; }
-  .preview-col pre code{ background:none; border:none; padding:0; color:var(--text-dim); }
-  .preview-col blockquote{ border-left:3px solid var(--cyan-dim); margin:14px 0; padding:2px 14px; color:var(--text-muted); }
-  .preview-col ul, .preview-col ol{ color:var(--text-dim); font-size:14px; line-height:1.7; }
-  .preview-col hr{ border:none; border-top:1px solid var(--border-soft); margin:24px 0; }
-  .preview-col a{ color:var(--cyan); }
-  .empty-editor{
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    height:100%; color:var(--text-muted); gap:12px; text-align:center; padding:20px;
-  }
-  .empty-editor .glyph{ font-family:var(--mono); font-size:28px; color:var(--border); }
+    .badge.ELB {
+      background: rgba(155, 207, 111, 0.13);
+      color: #a9dd7f;
+      border: 1px solid #40602f;
+    }
 
-  /* ---------- Quiz view ---------- */
-  #view-quiz{ display:none; flex:1; flex-direction:column; align-items:center; padding:34px 20px 60px; overflow-y:auto; }
-  #view-quiz.active{ display:flex; }
-  .quiz-wrap{ width:100%; max-width:760px; }
+    .badge.S3 {
+      background: rgba(111, 207, 151, 0.13);
+      color: #6fcf97;
+      border: 1px solid #2f5c40;
+    }
 
-  .setup-card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:26px;
-  }
-  .setup-card h2{ margin:0 0 4px; font-size:18px; }
-  .setup-card .lede{ color:var(--text-muted); font-size:13px; margin:0 0 22px; }
+    .badge.DBA {
+      background: rgba(90, 200, 180, 0.14);
+      color: #66d0bc;
+      border: 1px solid #245a50;
+    }
 
-  .mode-toggle{
-    display:inline-flex; gap:2px; margin-bottom:22px;
-    background:var(--panel-alt); border:1px solid var(--border);
-    border-radius:8px; padding:3px;
-  }
-  .mode-toggle button{
-    border:none; background:transparent; color:var(--text-muted);
-    font-size:12.5px; font-family:var(--mono);
-    padding:7px 16px; border-radius:6px; transition:all .15s ease;
-  }
-  .mode-toggle button.active{
-    background:var(--panel-raised); color:var(--amber);
-    box-shadow:inset 0 0 0 1px var(--border);
-  }
-  .mode-toggle button:hover:not(.active){ color:var(--text); }
-  .paper-hint{ color:var(--text-muted); font-size:12.5px; line-height:1.55; font-family:var(--mono); margin-bottom:20px; }
-  .paper-hint code{ color:var(--cyan); }
+    .badge.CMP {
+      background: rgba(90, 170, 232, 0.14);
+      color: #6fb0ef;
+      border: 1px solid #274d6b;
+    }
 
-  .domain-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
-  .chip{
-    border:1px solid var(--border);
-    background:var(--panel-alt);
-    color:var(--text-dim);
-    padding:8px 14px;
-    border-radius:20px;
-    font-size:12.5px;
-    display:flex; align-items:center; gap:7px;
-  }
-  .chip.active{ border-color:var(--amber-dim); background:rgba(232,163,61,0.12); color:var(--amber); }
-  .chip .count{ font-family:var(--mono); font-size:10.5px; color:var(--text-muted); }
-  .chip.active .count{ color:var(--amber); }
+    .badge.DEP {
+      background: rgba(120, 150, 235, 0.14);
+      color: #8ba3f0;
+      border: 1px solid #33437a;
+    }
 
-  .field-row{ display:flex; align-items:center; gap:14px; margin-bottom:22px; }
-  .field-row label{ font-size:12.5px; color:var(--text-muted); font-family:var(--mono); }
-  .field-row select{
-    background:var(--panel-alt); border:1px solid var(--border); color:var(--text);
-    padding:8px 10px; border-radius:var(--radius); font-size:13px;
-  }
+    .badge.GLB {
+      background: rgba(120, 196, 220, 0.14);
+      color: #7fc8dc;
+      border: 1px solid #2c5460;
+    }
 
-  .primary-btn{
-    background:var(--amber);
-    color:#241705;
-    border:none;
-    font-weight:700;
-    font-size:13.5px;
-    padding:11px 22px;
-    border-radius:var(--radius);
-    letter-spacing:0.01em;
-  }
-  .primary-btn:hover{ filter:brightness(1.07); }
-  .primary-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+    .badge.INT {
+      background: rgba(155, 124, 232, 0.15);
+      color: #b49cf0;
+      border: 1px solid #4a3a7a;
+    }
 
-  .stats-strip{ display:flex; gap:10px; margin-top:22px; flex-wrap:wrap; }
-  .stat-tile{
-    flex:1; min-width:120px;
-    background:var(--panel-alt);
-    border:1px solid var(--border-soft);
-    border-radius:var(--radius);
-    padding:12px 14px;
-  }
-  .stat-tile .num{ font-family:var(--mono); font-size:20px; color:var(--cyan); font-weight:700; }
-  .stat-tile .lbl{ font-size:10.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
+    .badge.MON {
+      background: rgba(190, 130, 225, 0.14);
+      color: #c690e0;
+      border: 1px solid #563a6b;
+    }
 
-  .quiz-header{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
-  .progress-track{
-    flex:1; height:6px; background:var(--panel-alt); border-radius:4px; overflow:hidden; border:1px solid var(--border-soft);
-  }
-  .progress-fill{ height:100%; background:linear-gradient(90deg, var(--cyan), var(--amber)); transition:width .25s ease; }
-  .q-counter{ font-family:var(--mono); font-size:12px; color:var(--text-muted); white-space:nowrap; }
+    .badge.VPC {
+      background: rgba(225, 120, 190, 0.14);
+      color: #e690c4;
+      border: 1px solid #6b3355;
+    }
 
-  .question-card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:26px;
-  }
-  .q-domain-tag{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
-  .q-domain-tag span.txt{ font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; }
-  .q-text{ font-size:16px; line-height:1.55; margin:0 0 20px; }
+    .badge.SEC {
+      background: rgba(235, 110, 120, 0.14);
+      color: #f0868f;
+      border: 1px solid #6b3035;
+    }
 
-  .choices{ display:flex; flex-direction:column; gap:9px; }
-  .choice{
-    display:flex; align-items:flex-start; gap:11px;
-    border:1px solid var(--border);
-    background:var(--panel-alt);
-    border-radius:var(--radius);
-    padding:12px 14px;
-    cursor:pointer;
-    font-size:13.5px;
-    line-height:1.5;
-    color:var(--text-dim);
-    transition:border-color .12s ease, background .12s ease;
-  }
-  .choice:hover{ border-color:var(--cyan-dim); }
-  .choice .letter{
-    font-family:var(--mono); font-size:11.5px; font-weight:700;
-    width:20px; height:20px; border-radius:5px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    background:var(--panel-raised); color:var(--text-muted); border:1px solid var(--border);
-  }
-  .choice.picked{ border-color:var(--cyan-dim); background:rgba(95,179,179,0.12); color:var(--text); }
-  .choice.picked .letter{ background:rgba(95,179,179,0.2); color:var(--cyan); border-color:var(--cyan-dim); }
-  .choice.missed{ border-color:#2f5c40; background:rgba(111,207,151,0.06); }
-  .choice.missed .letter{ color:var(--success); border-color:#2f5c40; }
-  .multi-hint{ font-family:var(--mono); font-size:10.5px; color:var(--cyan); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
-  .deprecated-badge{ font-size:12px; color:var(--amber); background:rgba(232,163,61,0.12); border:1px solid var(--amber-dim); border-radius:var(--radius); padding:6px 10px; margin-bottom:14px; }
-  .choice.correct{ border-color:#2f5c40; background:rgba(111,207,151,0.1); color:var(--text); }
-  .choice.correct .letter{ background:rgba(111,207,151,0.2); color:var(--success); border-color:#2f5c40; }
-  .choice.incorrect{ border-color:#6b2e2e; background:rgba(235,87,87,0.09); color:var(--text); }
-  .choice.incorrect .letter{ background:rgba(235,87,87,0.18); color:var(--error); border-color:#6b2e2e; }
-  .choice.disabled{ cursor:default; }
-  .choice.dim{ opacity:0.55; }
+    .badge.ML {
+      background: rgba(220, 150, 90, 0.14);
+      color: #e0a066;
+      border: 1px solid #6b4d2c;
+    }
 
-  .explain-box{
-    margin-top:18px; padding:14px 16px;
-    background:var(--panel-alt);
-    border:1px solid var(--border-soft);
-    border-left:3px solid var(--cyan-dim);
-    border-radius:6px;
-    font-size:13px;
-    line-height:1.6;
-    color:var(--text-dim);
-    display:none;
-  }
-  .explain-box.show{ display:block; }
-  .explain-box .lbl{ font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--cyan); margin-bottom:5px; }
+    .badge.ACM {
+      background: rgba(140, 200, 120, 0.14);
+      color: #9dd682;
+      border: 1px solid #3d5c30;
+    }
 
-  .quiz-nav{ display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:10px; }
-  .quiz-nav-left{ display:flex; gap:8px; }
+    .badge.AID {
+      background: rgba(200, 120, 220, 0.14);
+      color: #d08ce0;
+      border: 1px solid #5c356b;
+    }
 
-  .results-card{ background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:30px; text-align:center; }
-  .results-score{ font-family:var(--mono); font-size:44px; font-weight:700; color:var(--amber); margin:6px 0 2px; }
-  .results-sub{ color:var(--text-muted); font-size:13px; margin-bottom:24px; }
-  .results-actions{ display:flex; gap:10px; justify-content:center; margin-bottom:26px; flex-wrap:wrap; }
-  .review-list{ text-align:left; display:flex; flex-direction:column; gap:10px; }
-  .review-item{ background:var(--panel-alt); border:1px solid var(--border-soft); border-radius:var(--radius); padding:12px 14px; font-size:13px; }
-  .review-item .rq{ color:var(--text); margin-bottom:6px; }
-  .review-item .ra{ color:var(--text-muted); font-size:12px; }
-  .review-item .ra b{ color:var(--success); font-weight:600; }
-  .review-item .ra .wrong{ color:var(--error); text-decoration:line-through; }
+    .badge.OTH {
+      background: rgba(183, 198, 214, 0.1);
+      color: #b7c6d6;
+      border: 1px solid var(--border);
+    }
 
-  /* ---------- Bank manager ---------- */
-  .bank-toggle-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-  .bank-panel{ display:none; margin-top:18px; }
-  .bank-panel.show{ display:block; }
-  .bank-toolbar{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-  .bank-list{ display:flex; flex-direction:column; gap:8px; max-height:420px; overflow-y:auto; padding-right:4px; }
-  .bank-row{ background:var(--panel-alt); border:1px solid var(--border-soft); border-radius:var(--radius); padding:10px 12px; font-size:12.5px; }
-  .bank-row-head{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
-  .bank-row-q{ color:var(--text-dim); flex:1; }
-  .bank-row-actions{ display:flex; gap:6px; }
-  .bank-row-actions button{ background:none; border:none; color:var(--text-muted); font-size:12px; padding:2px 5px; }
-  .bank-row-actions button:hover{ color:var(--amber); }
+    .badge.ARC {
+      background: rgba(130, 180, 210, 0.14);
+      color: #8bbcd6;
+      border: 1px solid #315466;
+    }
 
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(5,10,16,0.7);
-    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
-  }
-  .modal-overlay.show{ display:flex; }
-  .modal{
-    background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    padding:24px; width:100%; max-width:520px; max-height:86vh; overflow-y:auto;
-  }
-  .modal h3{ margin-top:0; font-size:15px; }
-  .modal label{ display:block; font-size:11px; font-family:var(--mono); color:var(--text-muted); margin:14px 0 5px; text-transform:uppercase; letter-spacing:0.05em; }
-  .modal input[type=text], .modal textarea, .modal select{
-    width:100%; background:var(--panel-alt); border:1px solid var(--border); color:var(--text);
-    padding:8px 10px; border-radius:var(--radius); font-size:13px;
-  }
-  .modal textarea{ resize:vertical; min-height:50px; }
-  .modal .opt-row{ display:flex; align-items:center; gap:8px; margin-top:6px; }
-  .modal .opt-row input[type=text]{ flex:1; }
-  .modal .opt-row input[type=radio]{ accent-color:var(--amber); flex-shrink:0; }
-  .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:22px; }
-  .btn-cancel{ background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:8px 16px; border-radius:var(--radius); font-size:12.5px; }
-  .btn-save{ background:var(--amber); border:none; color:#241705; font-weight:700; padding:8px 16px; border-radius:var(--radius); font-size:12.5px; }
+    .note-list {
+      list-style: none;
+      margin: 0;
+      padding: 0 8px 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
 
-  .toast{
-    position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px);
-    background:var(--panel-raised); border:1px solid var(--border); color:var(--text);
-    padding:10px 18px; border-radius:8px; font-size:12.5px; font-family:var(--mono);
-    opacity:0; pointer-events:none; transition:all .2s ease; z-index:200;
-  }
-  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+    .note-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 8px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 1px;
+    }
 
-  input[type=file]{ display:none; }
+    .note-item:hover {
+      background: var(--panel-alt);
+    }
 
-  @media (max-width: 860px){
-    #view-notes.active{ grid-template-columns:1fr; }
-    .notes-sidebar{ display:none; }
-    .editor-body{ grid-template-columns:1fr; }
-    .preview-col{ display:none; }
-  }
-</style>
+    .note-item.selected {
+      background: var(--panel-raised);
+      color: var(--text);
+      box-shadow: inset 2px 0 0 var(--amber);
+    }
+
+    .note-item .title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .note-item .del {
+      opacity: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+      border: none;
+      background: none;
+      padding: 2px 4px;
+    }
+
+    .note-item:hover .del {
+      opacity: 1;
+    }
+
+    .note-item .del:hover {
+      color: var(--error);
+    }
+
+    .empty-hint {
+      padding: 16px;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .sidebar-foot {
+      border-top: 1px solid var(--border-soft);
+      padding: 10px 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .ghost-btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-family: var(--mono);
+      padding: 7px 6px;
+      border-radius: var(--radius);
+    }
+
+    .ghost-btn:hover {
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
+    }
+
+    .editor-pane {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .note-title-input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--sans);
+      flex: 1;
+      padding: 4px 0;
+    }
+
+    .note-title-input:focus {
+      outline: none;
+    }
+
+    .domain-select {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 12px;
+      font-family: var(--mono);
+      padding: 6px 8px;
+      border-radius: var(--radius);
+    }
+
+    .save-state {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      min-width: 70px;
+      text-align: right;
+    }
+
+    .editor-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 0;
+    }
+
+    .editor-col,
+    .preview-col {
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .editor-col {
+      border-right: 1px solid var(--border-soft);
+    }
+
+    textarea#markdown-input {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.65;
+      padding: 20px;
+      resize: none;
+    }
+
+    textarea#markdown-input:focus {
+      outline: none;
+    }
+
+    .preview-col {
+      padding: 20px 28px;
+    }
+
+    .preview-col h1,
+    .preview-col h2,
+    .preview-col h3 {
+      font-family: var(--sans);
+    }
+
+    .preview-col h1 {
+      font-size: 22px;
+      border-bottom: 1px solid var(--border-soft);
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+
+    .preview-col h2 {
+      font-size: 18px;
+      color: var(--amber);
+      margin-top: 28px;
+    }
+
+    .preview-col h3 {
+      font-size: 15px;
+      color: var(--cyan);
+      margin-top: 20px;
+    }
+
+    .preview-col p {
+      line-height: 1.7;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    .preview-col code {
+      background: var(--panel-alt);
+      border: 1px solid var(--border-soft);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--amber);
+    }
+
+    .preview-col pre {
+      background: var(--panel-alt);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      overflow-x: auto;
+    }
+
+    .preview-col pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text-dim);
+    }
+
+    .preview-col blockquote {
+      border-left: 3px solid var(--cyan-dim);
+      margin: 14px 0;
+      padding: 2px 14px;
+      color: var(--text-muted);
+    }
+
+    .preview-col ul,
+    .preview-col ol {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .preview-col hr {
+      border: none;
+      border-top: 1px solid var(--border-soft);
+      margin: 24px 0;
+    }
+
+    .preview-col a {
+      color: var(--cyan);
+    }
+
+    .empty-editor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      gap: 12px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .empty-editor .glyph {
+      font-family: var(--mono);
+      font-size: 28px;
+      color: var(--border);
+    }
+
+    /* ---------- Quiz view ---------- */
+    #view-quiz {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      padding: 34px 20px 60px;
+      overflow-y: auto;
+    }
+
+    #view-quiz.active {
+      display: flex;
+    }
+
+    .quiz-wrap {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .setup-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 26px;
+    }
+
+    .setup-card h2 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .setup-card .lede {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin: 0 0 22px;
+    }
+
+    .mode-toggle {
+      display: inline-flex;
+      gap: 2px;
+      margin-bottom: 22px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .mode-toggle button {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-family: var(--mono);
+      padding: 7px 16px;
+      border-radius: 6px;
+      transition: all .15s ease;
+    }
+
+    .mode-toggle button.active {
+      background: var(--panel-raised);
+      color: var(--amber);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+
+    .mode-toggle button:hover:not(.active) {
+      color: var(--text);
+    }
+
+    .paper-hint {
+      color: var(--text-muted);
+      font-size: 12.5px;
+      line-height: 1.55;
+      font-family: var(--mono);
+      margin-bottom: 20px;
+    }
+
+    .paper-hint code {
+      color: var(--cyan);
+    }
+
+    .domain-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: var(--text-dim);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .chip.active {
+      border-color: var(--amber-dim);
+      background: rgba(232, 163, 61, 0.12);
+      color: var(--amber);
+    }
+
+    .chip .count {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    .chip.active .count {
+      color: var(--amber);
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .field-row label {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    .field-row select {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+
+    .primary-btn {
+      background: var(--amber);
+      color: #241705;
+      border: none;
+      font-weight: 700;
+      font-size: 13.5px;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      letter-spacing: 0.01em;
+    }
+
+    .primary-btn:hover {
+      filter: brightness(1.07);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .stats-strip {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .stat-tile {
+      flex: 1;
+      min-width: 120px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+
+    .stat-tile .num {
+      font-family: var(--mono);
+      font-size: 20px;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .stat-tile .lbl {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: var(--panel-alt);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      transition: width .25s ease;
+    }
+
+    .q-counter {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .question-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 26px;
+    }
+
+    .q-domain-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .q-domain-tag span.txt {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .q-text {
+      font-size: 16px;
+      line-height: 1.55;
+      margin: 0 0 20px;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .choice {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      cursor: pointer;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text-dim);
+      transition: border-color .12s ease, background .12s ease;
+    }
+
+    .choice:hover {
+      border-color: var(--cyan-dim);
+    }
+
+    .choice .letter {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel-raised);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .choice.picked {
+      border-color: var(--cyan-dim);
+      background: rgba(95, 179, 179, 0.12);
+      color: var(--text);
+    }
+
+    .choice.picked .letter {
+      background: rgba(95, 179, 179, 0.2);
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+    }
+
+    .choice.missed {
+      border-color: #2f5c40;
+      background: rgba(111, 207, 151, 0.06);
+    }
+
+    .choice.missed .letter {
+      color: var(--success);
+      border-color: #2f5c40;
+    }
+
+    .multi-hint {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .deprecated-badge {
+      font-size: 12px;
+      color: var(--amber);
+      background: rgba(232, 163, 61, 0.12);
+      border: 1px solid var(--amber-dim);
+      border-radius: var(--radius);
+      padding: 6px 10px;
+      margin-bottom: 14px;
+    }
+
+    .choice.correct {
+      border-color: #2f5c40;
+      background: rgba(111, 207, 151, 0.1);
+      color: var(--text);
+    }
+
+    .choice.correct .letter {
+      background: rgba(111, 207, 151, 0.2);
+      color: var(--success);
+      border-color: #2f5c40;
+    }
+
+    .choice.incorrect {
+      border-color: #6b2e2e;
+      background: rgba(235, 87, 87, 0.09);
+      color: var(--text);
+    }
+
+    .choice.incorrect .letter {
+      background: rgba(235, 87, 87, 0.18);
+      color: var(--error);
+      border-color: #6b2e2e;
+    }
+
+    .choice.disabled {
+      cursor: default;
+    }
+
+    .choice.dim {
+      opacity: 0.55;
+    }
+
+    .explain-box {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--cyan-dim);
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-dim);
+      display: none;
+    }
+
+    .explain-box.show {
+      display: block;
+    }
+
+    .explain-box .lbl {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan);
+      margin-bottom: 5px;
+    }
+
+    .quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .quiz-nav-left {
+      display: flex;
+      gap: 8px;
+    }
+
+    .results-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .results-score {
+      font-family: var(--mono);
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--amber);
+      margin: 6px 0 2px;
+    }
+
+    .results-sub {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    .review-list {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .review-item {
+      background: var(--panel-alt);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+
+    .review-item .rq {
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .review-item .ra {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .review-item .ra b {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .review-item .ra .wrong {
+      color: var(--error);
+      text-decoration: line-through;
+    }
+
+    /* ---------- Bank manager ---------- */
+    .bank-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .bank-panel {
+      display: none;
+      margin-top: 18px;
+    }
+
+    .bank-panel.show {
+      display: block;
+    }
+
+    .bank-toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .bank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .bank-row {
+      background: var(--panel-alt);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      font-size: 12.5px;
+    }
+
+    .bank-row-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .bank-row-q {
+      color: var(--text-dim);
+      flex: 1;
+    }
+
+    .bank-row-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .bank-row-actions button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 2px 5px;
+    }
+
+    .bank-row-actions button:hover {
+      color: var(--amber);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 16, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 86vh;
+      overflow-y: auto;
+    }
+
+    .modal h3 {
+      margin-top: 0;
+      font-size: 15px;
+    }
+
+    .modal label {
+      display: block;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      margin: 14px 0 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .modal input[type=text],
+    .modal textarea,
+    .modal select {
+      width: 100%;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+
+    .modal textarea {
+      resize: vertical;
+      min-height: 50px;
+    }
+
+    .modal .opt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .modal .opt-row input[type=text] {
+      flex: 1;
+    }
+
+    .modal .opt-row input[type=radio] {
+      accent-color: var(--amber);
+      flex-shrink: 0;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 12.5px;
+    }
+
+    .btn-save {
+      background: var(--amber);
+      border: none;
+      color: #241705;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 12.5px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--panel-raised);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-family: var(--mono);
+      opacity: 0;
+      pointer-events: none;
+      transition: all .2s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    input[type=file] {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      #view-notes.active {
+        grid-template-columns: 1fr;
+      }
+
+      .notes-sidebar {
+        display: none;
+      }
+
+      .editor-body {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-col {
+        display: none;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="shell">
-  <header class="topbar">
-    <div class="brand">
-      <div class="dot"></div>
-      <div class="name">CCP // STUDY CONSOLE</div>
-      <div class="sub">AWS Certified Cloud Practitioner</div>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="name">CCP // STUDY CONSOLE</div>
+        <div class="sub">AWS Certified Cloud Practitioner</div>
+      </div>
+      <nav class="tabs">
+        <button id="tab-notes" onclick="switchView('notes')">Notes</button>
+        <button id="tab-quiz" class="active" onclick="switchView('quiz')">Quiz</button>
+      </nav>
+    </header>
+
+    <!-- NOTES VIEW -->
+    <div class="view" id="view-notes">
+      <aside class="notes-sidebar">
+        <div class="sidebar-head">
+          <input class="search-box" id="note-search" placeholder="Search notes..." oninput="renderNoteList()">
+          <button class="new-note-btn" onclick="createNote()">+ New note</button>
+        </div>
+        <div id="note-list-container" style="flex:1; overflow-y:auto;"></div>
+        <div class="sidebar-foot">
+          <button class="ghost-btn" onclick="exportNotes()">Export</button>
+          <button class="ghost-btn" onclick="document.getElementById('import-notes-file').click()">Import</button>
+          <input type="file" id="import-notes-file" accept="application/json" onchange="importNotes(event)">
+        </div>
+      </aside>
+      <section class="editor-pane" id="editor-pane">
+        <!-- filled by JS -->
+      </section>
     </div>
-    <nav class="tabs">
-      <button id="tab-notes" onclick="switchView('notes')">Notes</button>
-      <button id="tab-quiz" class="active" onclick="switchView('quiz')">Quiz</button>
-    </nav>
-  </header>
 
-  <!-- NOTES VIEW -->
-  <div class="view" id="view-notes">
-    <aside class="notes-sidebar">
-      <div class="sidebar-head">
-        <input class="search-box" id="note-search" placeholder="Search notes..." oninput="renderNoteList()">
-        <button class="new-note-btn" onclick="createNote()">+ New note</button>
-      </div>
-      <div id="note-list-container" style="flex:1; overflow-y:auto;"></div>
-      <div class="sidebar-foot">
-        <button class="ghost-btn" onclick="exportNotes()">Export</button>
-        <button class="ghost-btn" onclick="document.getElementById('import-notes-file').click()">Import</button>
-        <input type="file" id="import-notes-file" accept="application/json" onchange="importNotes(event)">
-      </div>
-    </aside>
-    <section class="editor-pane" id="editor-pane">
-      <!-- filled by JS -->
-    </section>
+    <!-- QUIZ VIEW -->
+    <div class="view" id="view-quiz">
+      <div class="quiz-wrap" id="quiz-wrap"></div>
+    </div>
   </div>
 
-  <!-- QUIZ VIEW -->
-  <div class="view" id="view-quiz">
-    <div class="quiz-wrap" id="quiz-wrap"></div>
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal-content"></div>
   </div>
-</div>
 
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal" id="modal-content"></div>
-</div>
+  <div class="toast" id="toast"></div>
 
-<div class="toast" id="toast"></div>
-
-<!-- Question sets loaded from /questions. Each file pushes onto
+  <!-- Question sets loaded from /questions. Each file pushes onto
      window.QUESTION_FILES, which the app reads on startup. Add a new .js file
      here (and in the questions/ folder) to grow the bank.
 
      Standalone domain sets (revision-only — no paperId). One file per domain
      code (see DOMAINS below); each pools into "Revision (mixed)" mode. -->
-<script src="questions/cld.js"></script>
-<script src="questions/iam.js"></script>
-<script src="questions/ec2.js"></script>
-<script src="questions/stg.js"></script>
-<script src="questions/elb.js"></script>
-<script src="questions/s3.js"></script>
-<script src="questions/dba.js"></script>
-<script src="questions/cmp.js"></script>
-<script src="questions/dep.js"></script>
-<script src="questions/glb.js"></script>
-<script src="questions/int.js"></script>
-<script src="questions/mon.js"></script>
-<script src="questions/vpc.js"></script>
-<script src="questions/sec.js"></script>
-<script src="questions/ml.js"></script>
-<script src="questions/acm.js"></script>
-<script src="questions/aid.js"></script>
-<script src="questions/oth.js"></script>
-<script src="questions/arc.js"></script>
+  <script src="questions/cld.js"></script>
+  <script src="questions/iam.js"></script>
+  <script src="questions/ec2.js"></script>
+  <script src="questions/stg.js"></script>
+  <script src="questions/elb.js"></script>
+  <script src="questions/s3.js"></script>
+  <script src="questions/dba.js"></script>
+  <script src="questions/cmp.js"></script>
+  <script src="questions/dep.js"></script>
+  <script src="questions/glb.js"></script>
+  <script src="questions/int.js"></script>
+  <script src="questions/mon.js"></script>
+  <script src="questions/vpc.js"></script>
+  <script src="questions/sec.js"></script>
+  <script src="questions/ml.js"></script>
+  <script src="questions/acm.js"></script>
+  <script src="questions/aid.js"></script>
+  <script src="questions/oth.js"></script>
+  <script src="questions/arc.js"></script>
 
-<!-- Practice papers (each file carries paperId/paperName; selectable as a
+  <!-- Practice papers (each file carries paperId/paperName; selectable as a
      whole paper AND pooled into revision). Add one <script> line per paper. -->
-<script src="questions/papers/paper-01.js"></script>
-<script src="questions/papers/paper-02.js"></script>
-<script src="questions/papers/paper-03.js"></script>
-<script src="questions/papers/paper-04.js"></script>
-<script src="questions/papers/paper-05.js"></script>
-<script src="questions/papers/paper-06.js"></script>
-<script src="questions/papers/paper-07.js"></script>
-<script src="questions/papers/paper-08.js"></script>
-<script src="questions/papers/paper-09.js"></script>
-<script src="questions/papers/paper-10.js"></script>
-<script src="questions/papers/paper-11.js"></script>
-<script src="questions/papers/paper-12.js"></script>
-<script src="questions/papers/paper-13.js"></script>
-<script src="questions/papers/paper-14.js"></script>
-<script src="questions/papers/paper-15.js"></script>
-<script src="questions/papers/paper-16.js"></script>
-<script src="questions/papers/paper-17.js"></script>
-<script src="questions/papers/paper-18.js"></script>
-<script src="questions/papers/paper-19.js"></script>
-<script src="questions/papers/paper-20.js"></script>
-<script src="questions/papers/paper-21.js"></script>
-<script src="questions/papers/paper-22.js"></script>
-<script src="questions/papers/paper-23.js"></script>
+  <script src="questions/papers/paper-01.js"></script>
+  <script src="questions/papers/paper-02.js"></script>
+  <script src="questions/papers/paper-03.js"></script>
+  <script src="questions/papers/paper-04.js"></script>
+  <script src="questions/papers/paper-05.js"></script>
+  <script src="questions/papers/paper-06.js"></script>
+  <script src="questions/papers/paper-07.js"></script>
+  <script src="questions/papers/paper-08.js"></script>
+  <script src="questions/papers/paper-09.js"></script>
+  <script src="questions/papers/paper-10.js"></script>
+  <script src="questions/papers/paper-11.js"></script>
+  <script src="questions/papers/paper-12.js"></script>
+  <script src="questions/papers/paper-13.js"></script>
+  <script src="questions/papers/paper-14.js"></script>
+  <script src="questions/papers/paper-15.js"></script>
+  <script src="questions/papers/paper-16.js"></script>
+  <script src="questions/papers/paper-17.js"></script>
+  <script src="questions/papers/paper-18.js"></script>
+  <script src="questions/papers/paper-19.js"></script>
+  <script src="questions/papers/paper-20.js"></script>
+  <script src="questions/papers/paper-21.js"></script>
+  <script src="questions/papers/paper-22.js"></script>
+  <script src="questions/papers/paper-23.js"></script>
+  <script src="questions/papers/paper-24.js"></script>
 
-<script>
-/* =========================================================
-   DATA LAYER
-========================================================= */
-const LS_NOTES = 'ccp_notes_v1';
-const LS_BANK = 'ccp_bank_v1';
-const LS_HISTORY = 'ccp_history_v1';
-const LS_STATS = 'ccp_stats_v1';
+  <script>
+    /* =========================================================
+       DATA LAYER
+    ========================================================= */
+    const LS_NOTES = 'ccp_notes_v1';
+    const LS_BANK = 'ccp_bank_v1';
+    const LS_HISTORY = 'ccp_history_v1';
+    const LS_STATS = 'ccp_stats_v1';
 
-// Domains follow the kananinirav / Maarek course table-of-contents chapters.
-// Each question's `domain` is one of these codes; badge colors live in the CSS above.
-const DOMAINS = [
-  { code:'CLD', name:'Cloud Computing' },
-  { code:'IAM', name:'IAM: Identity & Access Management' },
-  { code:'EC2', name:'EC2: Virtual Machines' },
-  { code:'STG', name:'EC2 Instance Storage' },
-  { code:'ELB', name:'Elastic Load Balancing & Auto Scaling' },
-  { code:'S3',  name:'Amazon S3' },
-  { code:'DBA', name:'Databases & Analytics' },
-  { code:'CMP', name:'Other Compute' },
-  { code:'DEP', name:'Deploying & Managing at Scale' },
-  { code:'GLB', name:'Global Infrastructure' },
-  { code:'INT', name:'Cloud Integration' },
-  { code:'MON', name:'Cloud Monitoring' },
-  { code:'VPC', name:'VPC & Networking' },
-  { code:'SEC', name:'Security & Compliance' },
-  { code:'ML',  name:'Machine Learning' },
-  { code:'ACM', name:'Account Management, Billing & Support' },
-  { code:'AID', name:'Advanced Identity' },
-  { code:'OTH', name:'Other AWS Services' },
-  { code:'ARC', name:'Architecting & Ecosystem' }
-];
+    // Domains follow the kananinirav / Maarek course table-of-contents chapters.
+    // Each question's `domain` is one of these codes; badge colors live in the CSS above.
+    const DOMAINS = [
+      { code: 'CLD', name: 'Cloud Computing' },
+      { code: 'IAM', name: 'IAM: Identity & Access Management' },
+      { code: 'EC2', name: 'EC2: Virtual Machines' },
+      { code: 'STG', name: 'EC2 Instance Storage' },
+      { code: 'ELB', name: 'Elastic Load Balancing & Auto Scaling' },
+      { code: 'S3', name: 'Amazon S3' },
+      { code: 'DBA', name: 'Databases & Analytics' },
+      { code: 'CMP', name: 'Other Compute' },
+      { code: 'DEP', name: 'Deploying & Managing at Scale' },
+      { code: 'GLB', name: 'Global Infrastructure' },
+      { code: 'INT', name: 'Cloud Integration' },
+      { code: 'MON', name: 'Cloud Monitoring' },
+      { code: 'VPC', name: 'VPC & Networking' },
+      { code: 'SEC', name: 'Security & Compliance' },
+      { code: 'ML', name: 'Machine Learning' },
+      { code: 'ACM', name: 'Account Management, Billing & Support' },
+      { code: 'AID', name: 'Advanced Identity' },
+      { code: 'OTH', name: 'Other AWS Services' },
+      { code: 'ARC', name: 'Architecting & Ecosystem' }
+    ];
 
-function domainName(code){ const d = DOMAINS.find(d=>d.code===code); return d ? d.name : code; }
+    function domainName(code) { const d = DOMAINS.find(d => d.code === code); return d ? d.name : code; }
 
-function cryptoId(){
-  return 'q_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
-}
+    function cryptoId() {
+      return 'q_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    }
 
-function loadNotes(){
-  try{ return JSON.parse(localStorage.getItem(LS_NOTES)) || []; }catch(e){ return []; }
-}
-function saveNotes(notes){ localStorage.setItem(LS_NOTES, JSON.stringify(notes)); }
+    function loadNotes() {
+      try { return JSON.parse(localStorage.getItem(LS_NOTES)) || []; } catch (e) { return []; }
+    }
+    function saveNotes(notes) { localStorage.setItem(LS_NOTES, JSON.stringify(notes)); }
 
-/* Normalize a question into the app's internal shape. Accepts both the unified
-   file schema (question/options/correctAnswer/type/topic/explanation) and the
-   legacy shape used by older localStorage/user entries (q/choices/correct/
-   explain). Guarantees `correct` is always an array of indices. */
-function normalizeQuestion(raw){
-  if(!raw) return null;
-  const q = raw.question != null ? raw.question : raw.q;
-  const choices = Array.isArray(raw.options) ? raw.options
-                : Array.isArray(raw.choices) ? raw.choices : [];
-  let correct = raw.correctAnswer != null ? raw.correctAnswer : raw.correct;
-  if(!Array.isArray(correct)) correct = correct == null ? [] : [correct];
-  const explain = raw.explanation != null ? raw.explanation : raw.explain;
-  const type = raw.type || (correct.length > 1 ? 'multiple-select' : 'single');
-  return {
-    id: raw.id || cryptoId(),
-    domain: raw.domain || 'OTH',
-    topic: raw.topic || '',
-    type,
-    q,
-    choices,
-    correct,               // array of correct indices
-    explain: explain || '',
-    deprecated: raw.deprecated || null,
-    readOnly: !!raw.readOnly
-  };
-}
+    /* Normalize a question into the app's internal shape. Accepts both the unified
+       file schema (question/options/correctAnswer/type/topic/explanation) and the
+       legacy shape used by older localStorage/user entries (q/choices/correct/
+       explain). Guarantees `correct` is always an array of indices. */
+    function normalizeQuestion(raw) {
+      if (!raw) return null;
+      const q = raw.question != null ? raw.question : raw.q;
+      const choices = Array.isArray(raw.options) ? raw.options
+        : Array.isArray(raw.choices) ? raw.choices : [];
+      let correct = raw.correctAnswer != null ? raw.correctAnswer : raw.correct;
+      if (!Array.isArray(correct)) correct = correct == null ? [] : [correct];
+      const explain = raw.explanation != null ? raw.explanation : raw.explain;
+      const type = raw.type || (correct.length > 1 ? 'multiple-select' : 'single');
+      return {
+        id: raw.id || cryptoId(),
+        domain: raw.domain || 'OTH',
+        topic: raw.topic || '',
+        type,
+        q,
+        choices,
+        correct,               // array of correct indices
+        explain: explain || '',
+        deprecated: raw.deprecated || null,
+        readOnly: !!raw.readOnly
+      };
+    }
 
-/* Collect every question registered by the questions/*.js files. */
-function loadFileQuestions(){
-  const files = Array.isArray(window.QUESTION_FILES) ? window.QUESTION_FILES : [];
-  const out = [];
-  files.forEach(f=>{
-    (f && Array.isArray(f.questions) ? f.questions : []).forEach(raw=>{
-      const n = normalizeQuestion(raw);
-      if(n){
-        n.readOnly = true;
-        // Files that declare a paperId contribute a selectable practice paper;
-        // stamp it onto each question so it can be filtered by paper later.
-        if(f.paperId){ n.paperId = f.paperId; n.paperName = f.paperName || f.paperId; }
-        out.push(n);
+    /* Collect every question registered by the questions/*.js files. */
+    function loadFileQuestions() {
+      const files = Array.isArray(window.QUESTION_FILES) ? window.QUESTION_FILES : [];
+      const out = [];
+      files.forEach(f => {
+        (f && Array.isArray(f.questions) ? f.questions : []).forEach(raw => {
+          const n = normalizeQuestion(raw);
+          if (n) {
+            n.readOnly = true;
+            // Files that declare a paperId contribute a selectable practice paper;
+            // stamp it onto each question so it can be filtered by paper later.
+            if (f.paperId) { n.paperId = f.paperId; n.paperName = f.paperName || f.paperId; }
+            out.push(n);
+          }
+        });
+      });
+      return out;
+    }
+
+    /* Distinct practice papers present in the bank, in first-seen order, each with
+       its question count. Used to build the paper picker in the quiz setup. */
+    function listPapers() {
+      const seen = new Map();
+      bank.forEach(q => {
+        if (!q.paperId) return;
+        if (!seen.has(q.paperId)) seen.set(q.paperId, { paperId: q.paperId, paperName: q.paperName || q.paperId, count: 0 });
+        seen.get(q.paperId).count++;
+      });
+      return Array.from(seen.values());
+    }
+
+    /* Files are the source of truth: merge file questions (read-only) with the
+       user's own questions from localStorage, deduped by id (file wins). */
+    function loadBank() {
+      const fileQs = loadFileQuestions();
+      const fileIds = new Set(fileQs.map(q => q.id));
+
+      let userRaw = [];
+      try { userRaw = JSON.parse(localStorage.getItem(LS_BANK)) || []; } catch (e) { userRaw = []; }
+      if (!Array.isArray(userRaw)) userRaw = [];
+      const userQs = userRaw
+        .map(normalizeQuestion)
+        .filter(q => q && !q.readOnly && !fileIds.has(q.id));
+
+      return fileQs.concat(userQs);
+    }
+    /* Persist only user-added/edited questions; file questions are re-read on load. */
+    function saveBank(bank) {
+      const userQs = bank.filter(q => !q.readOnly);
+      localStorage.setItem(LS_BANK, JSON.stringify(userQs));
+    }
+
+    function loadHistory() {
+      try { return JSON.parse(localStorage.getItem(LS_HISTORY)) || []; } catch (e) { return []; }
+    }
+    function saveHistory(h) { localStorage.setItem(LS_HISTORY, JSON.stringify(h)); }
+
+    /* Per-question spaced-repetition stats, keyed by question id:
+       { [qId]: { level:0-5, seen:int, correct:int, wrong:int, lastSeen:ms|null } } */
+    function loadStats() { try { return JSON.parse(localStorage.getItem(LS_STATS)) || {}; } catch (e) { return {}; } }
+    function saveStats(s) { localStorage.setItem(LS_STATS, JSON.stringify(s)); }
+
+    let notes = loadNotes();
+    let bank = loadBank();
+    let history = loadHistory();
+    let stats = loadStats();
+
+    /* =========================================================
+       TINY MARKDOWN RENDERER (no external deps, fully offline)
+    ========================================================= */
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function renderMarkdown(src) {
+      if (!src) return '';
+      const lines = src.replace(/\r\n/g, '\n').split('\n');
+      let html = '';
+      let inCode = false, codeBuf = [];
+      let listType = null; // 'ul' | 'ol'
+      let paraBuf = [];
+
+      function flushPara() {
+        if (paraBuf.length) {
+          html += '<p>' + inlineMd(paraBuf.join(' ')) + '</p>';
+          paraBuf = [];
+        }
       }
-    });
-  });
-  return out;
-}
+      function closeList() {
+        if (listType) { html += listType === 'ul' ? '</ul>' : '</ol>'; listType = null; }
+      }
 
-/* Distinct practice papers present in the bank, in first-seen order, each with
-   its question count. Used to build the paper picker in the quiz setup. */
-function listPapers(){
-  const seen = new Map();
-  bank.forEach(q=>{
-    if(!q.paperId) return;
-    if(!seen.has(q.paperId)) seen.set(q.paperId, { paperId:q.paperId, paperName:q.paperName || q.paperId, count:0 });
-    seen.get(q.paperId).count++;
-  });
-  return Array.from(seen.values());
-}
+      for (let raw of lines) {
+        const line = raw;
+        if (/^```/.test(line.trim())) {
+          if (!inCode) { flushPara(); closeList(); inCode = true; codeBuf = []; }
+          else { html += '<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>'; inCode = false; }
+          continue;
+        }
+        if (inCode) { codeBuf.push(line); continue; }
 
-/* Files are the source of truth: merge file questions (read-only) with the
-   user's own questions from localStorage, deduped by id (file wins). */
-function loadBank(){
-  const fileQs = loadFileQuestions();
-  const fileIds = new Set(fileQs.map(q=>q.id));
+        if (line.trim() === '') { flushPara(); closeList(); continue; }
 
-  let userRaw = [];
-  try{ userRaw = JSON.parse(localStorage.getItem(LS_BANK)) || []; }catch(e){ userRaw = []; }
-  if(!Array.isArray(userRaw)) userRaw = [];
-  const userQs = userRaw
-    .map(normalizeQuestion)
-    .filter(q=>q && !q.readOnly && !fileIds.has(q.id));
-
-  return fileQs.concat(userQs);
-}
-/* Persist only user-added/edited questions; file questions are re-read on load. */
-function saveBank(bank){
-  const userQs = bank.filter(q=>!q.readOnly);
-  localStorage.setItem(LS_BANK, JSON.stringify(userQs));
-}
-
-function loadHistory(){
-  try{ return JSON.parse(localStorage.getItem(LS_HISTORY)) || []; }catch(e){ return []; }
-}
-function saveHistory(h){ localStorage.setItem(LS_HISTORY, JSON.stringify(h)); }
-
-/* Per-question spaced-repetition stats, keyed by question id:
-   { [qId]: { level:0-5, seen:int, correct:int, wrong:int, lastSeen:ms|null } } */
-function loadStats(){ try{ return JSON.parse(localStorage.getItem(LS_STATS)) || {}; }catch(e){ return {}; } }
-function saveStats(s){ localStorage.setItem(LS_STATS, JSON.stringify(s)); }
-
-let notes = loadNotes();
-let bank = loadBank();
-let history = loadHistory();
-let stats = loadStats();
-
-/* =========================================================
-   TINY MARKDOWN RENDERER (no external deps, fully offline)
-========================================================= */
-function escapeHtml(str){
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function renderMarkdown(src){
-  if(!src) return '';
-  const lines = src.replace(/\r\n/g,'\n').split('\n');
-  let html = '';
-  let inCode = false, codeBuf = [];
-  let listType = null; // 'ul' | 'ol'
-  let paraBuf = [];
-
-  function flushPara(){
-    if(paraBuf.length){
-      html += '<p>' + inlineMd(paraBuf.join(' ')) + '</p>';
-      paraBuf = [];
-    }
-  }
-  function closeList(){
-    if(listType){ html += listType === 'ul' ? '</ul>' : '</ol>'; listType = null; }
-  }
-
-  for(let raw of lines){
-    const line = raw;
-    if(/^```/.test(line.trim())){
-      if(!inCode){ flushPara(); closeList(); inCode = true; codeBuf = []; }
-      else{ html += '<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>'; inCode = false; }
-      continue;
-    }
-    if(inCode){ codeBuf.push(line); continue; }
-
-    if(line.trim() === ''){ flushPara(); closeList(); continue; }
-
-    let m;
-    if((m = line.match(/^(#{1,6})\s+(.*)$/))){
+        let m;
+        if ((m = line.match(/^(#{1,6})\s+(.*)$/))) {
+          flushPara(); closeList();
+          const lvl = m[1].length;
+          html += `<h${lvl}>${inlineMd(m[2])}</h${lvl}>`;
+          continue;
+        }
+        if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+          flushPara(); closeList();
+          html += '<hr>';
+          continue;
+        }
+        if ((m = line.match(/^>\s?(.*)$/))) {
+          flushPara(); closeList();
+          html += `<blockquote>${inlineMd(m[1])}</blockquote>`;
+          continue;
+        }
+        if ((m = line.match(/^\s*[-*]\s+(.*)$/))) {
+          flushPara();
+          if (listType !== 'ul') { closeList(); html += '<ul>'; listType = 'ul'; }
+          html += `<li>${inlineMd(m[1])}</li>`;
+          continue;
+        }
+        if ((m = line.match(/^\s*\d+\.\s+(.*)$/))) {
+          flushPara();
+          if (listType !== 'ol') { closeList(); html += '<ol>'; listType = 'ol'; }
+          html += `<li>${inlineMd(m[1])}</li>`;
+          continue;
+        }
+        closeList();
+        paraBuf.push(line);
+      }
       flushPara(); closeList();
-      const lvl = m[1].length;
-      html += `<h${lvl}>${inlineMd(m[2])}</h${lvl}>`;
-      continue;
+      if (inCode) { html += '<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>'; }
+      return html;
     }
-    if(/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())){
-      flushPara(); closeList();
-      html += '<hr>';
-      continue;
+    function inlineMd(text) {
+      let t = escapeHtml(text);
+      t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+      t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      return t;
     }
-    if((m = line.match(/^>\s?(.*)$/))){
-      flushPara(); closeList();
-      html += `<blockquote>${inlineMd(m[1])}</blockquote>`;
-      continue;
+
+    /* =========================================================
+       VIEW SWITCHING
+    ========================================================= */
+    function switchView(name) {
+      document.getElementById('view-notes').classList.toggle('active', name === 'notes');
+      document.getElementById('view-quiz').classList.toggle('active', name === 'quiz');
+      document.getElementById('tab-notes').classList.toggle('active', name === 'notes');
+      document.getElementById('tab-quiz').classList.toggle('active', name === 'quiz');
+      if (name === 'notes') renderNoteList();
+      if (name === 'quiz') renderQuizSetup();
     }
-    if((m = line.match(/^\s*[-*]\s+(.*)$/))){
-      flushPara();
-      if(listType !== 'ul'){ closeList(); html += '<ul>'; listType = 'ul'; }
-      html += `<li>${inlineMd(m[1])}</li>`;
-      continue;
-    }
-    if((m = line.match(/^\s*\d+\.\s+(.*)$/))){
-      flushPara();
-      if(listType !== 'ol'){ closeList(); html += '<ol>'; listType = 'ol'; }
-      html += `<li>${inlineMd(m[1])}</li>`;
-      continue;
-    }
-    closeList();
-    paraBuf.push(line);
-  }
-  flushPara(); closeList();
-  if(inCode){ html += '<pre><code>' + escapeHtml(codeBuf.join('\n')) + '</code></pre>'; }
-  return html;
-}
-function inlineMd(text){
-  let t = escapeHtml(text);
-  t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
-  t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  return t;
-}
 
-/* =========================================================
-   VIEW SWITCHING
-========================================================= */
-function switchView(name){
-  document.getElementById('view-notes').classList.toggle('active', name==='notes');
-  document.getElementById('view-quiz').classList.toggle('active', name==='quiz');
-  document.getElementById('tab-notes').classList.toggle('active', name==='notes');
-  document.getElementById('tab-quiz').classList.toggle('active', name==='quiz');
-  if(name==='notes') renderNoteList();
-  if(name==='quiz') renderQuizSetup();
-}
+    /* =========================================================
+       NOTES LOGIC
+    ========================================================= */
+    let currentNoteId = null;
+    let saveTimer = null;
 
-/* =========================================================
-   NOTES LOGIC
-========================================================= */
-let currentNoteId = null;
-let saveTimer = null;
+    function renderNoteList() {
+      const container = document.getElementById('note-list-container');
+      const q = document.getElementById('note-search').value.trim().toLowerCase();
+      const filtered = notes.filter(n => !q || n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
 
-function renderNoteList(){
-  const container = document.getElementById('note-list-container');
-  const q = document.getElementById('note-search').value.trim().toLowerCase();
-  const filtered = notes.filter(n => !q || n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
+      if (notes.length === 0) {
+        container.innerHTML = `<div class="empty-hint">No notes yet. Click <b>+ New note</b> to start capturing what you're studying.</div>`;
+        return;
+      }
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-hint">No notes match "${escapeHtml(q)}".</div>`;
+        return;
+      }
 
-  if(notes.length === 0){
-    container.innerHTML = `<div class="empty-hint">No notes yet. Click <b>+ New note</b> to start capturing what you're studying.</div>`;
-    return;
-  }
-  if(filtered.length === 0){
-    container.innerHTML = `<div class="empty-hint">No notes match "${escapeHtml(q)}".</div>`;
-    return;
-  }
-
-  let out = '';
-  DOMAINS.forEach(d => {
-    const group = filtered.filter(n => n.domain === d.code).sort((a,b)=>b.updated-a.updated);
-    if(group.length === 0) return;
-    out += `<div class="domain-group"><div class="domain-label"><span class="badge ${d.code}">${d.code}</span>${d.name}</div><ul class="note-list">`;
-    group.forEach(n => {
-      out += `<li class="note-item ${n.id===currentNoteId?'selected':''}" onclick="openNote('${n.id}')">
+      let out = '';
+      DOMAINS.forEach(d => {
+        const group = filtered.filter(n => n.domain === d.code).sort((a, b) => b.updated - a.updated);
+        if (group.length === 0) return;
+        out += `<div class="domain-group"><div class="domain-label"><span class="badge ${d.code}">${d.code}</span>${d.name}</div><ul class="note-list">`;
+        group.forEach(n => {
+          out += `<li class="note-item ${n.id === currentNoteId ? 'selected' : ''}" onclick="openNote('${n.id}')">
         <span class="title">${escapeHtml(n.title || 'Untitled')}</span>
         <button class="del" title="Delete note" onclick="event.stopPropagation(); deleteNote('${n.id}')">✕</button>
       </li>`;
-    });
-    out += `</ul></div>`;
-  });
-  container.innerHTML = out;
-}
+        });
+        out += `</ul></div>`;
+      });
+      container.innerHTML = out;
+    }
 
-function createNote(){
-  const note = { id: cryptoId(), title: 'Untitled note', domain: 'OTH', body: '', updated: Date.now() };
-  notes.unshift(note);
-  saveNotes(notes);
-  currentNoteId = note.id;
-  renderNoteList();
-  renderEditor();
-  setTimeout(()=>{ const el = document.getElementById('note-title-input'); if(el){ el.focus(); el.select(); } }, 30);
-}
+    function createNote() {
+      const note = { id: cryptoId(), title: 'Untitled note', domain: 'OTH', body: '', updated: Date.now() };
+      notes.unshift(note);
+      saveNotes(notes);
+      currentNoteId = note.id;
+      renderNoteList();
+      renderEditor();
+      setTimeout(() => { const el = document.getElementById('note-title-input'); if (el) { el.focus(); el.select(); } }, 30);
+    }
 
-function openNote(id){
-  currentNoteId = id;
-  renderNoteList();
-  renderEditor();
-}
+    function openNote(id) {
+      currentNoteId = id;
+      renderNoteList();
+      renderEditor();
+    }
 
-function deleteNote(id){
-  const n = notes.find(n=>n.id===id);
-  if(!n) return;
-  if(!confirm(`Delete "${n.title || 'Untitled'}"? This can't be undone.`)) return;
-  notes = notes.filter(n=>n.id!==id);
-  saveNotes(notes);
-  if(currentNoteId === id) currentNoteId = null;
-  renderNoteList();
-  renderEditor();
-}
+    function deleteNote(id) {
+      const n = notes.find(n => n.id === id);
+      if (!n) return;
+      if (!confirm(`Delete "${n.title || 'Untitled'}"? This can't be undone.`)) return;
+      notes = notes.filter(n => n.id !== id);
+      saveNotes(notes);
+      if (currentNoteId === id) currentNoteId = null;
+      renderNoteList();
+      renderEditor();
+    }
 
-function renderEditor(){
-  const pane = document.getElementById('editor-pane');
-  const note = notes.find(n=>n.id===currentNoteId);
-  if(!note){
-    pane.innerHTML = `<div class="empty-editor">
+    function renderEditor() {
+      const pane = document.getElementById('editor-pane');
+      const note = notes.find(n => n.id === currentNoteId);
+      if (!note) {
+        pane.innerHTML = `<div class="empty-editor">
       <div class="glyph">{ }</div>
       <div>Select a note, or create a new one, to start writing in Markdown.</div>
     </div>`;
-    return;
-  }
-  pane.innerHTML = `
+        return;
+      }
+      pane.innerHTML = `
     <div class="editor-toolbar">
       <input class="note-title-input" id="note-title-input" value="${escapeHtml(note.title)}" placeholder="Note title" oninput="updateNoteField('title', this.value)">
       <select class="domain-select" onchange="updateNoteField('domain', this.value)">
-        ${DOMAINS.map(d=>`<option value="${d.code}" ${d.code===note.domain?'selected':''}>${d.code} — ${d.name}</option>`).join('')}
+        ${DOMAINS.map(d => `<option value="${d.code}" ${d.code === note.domain ? 'selected' : ''}>${d.code} — ${d.name}</option>`).join('')}
       </select>
       <span class="save-state" id="save-state">saved</span>
     </div>
@@ -938,110 +1739,110 @@ function renderEditor(){
       <div class="preview-col" id="preview-col">${renderMarkdown(note.body) || '<p style="color:var(--text-muted)">Preview appears here.</p>'}</div>
     </div>
   `;
-  document.getElementById('markdown-input').addEventListener('input', (e)=>{
-    updateNoteField('body', e.target.value);
-    document.getElementById('preview-col').innerHTML = renderMarkdown(e.target.value) || '<p style="color:var(--text-muted)">Preview appears here.</p>';
-  });
-}
-
-function updateNoteField(field, value){
-  const note = notes.find(n=>n.id===currentNoteId);
-  if(!note) return;
-  note[field] = value;
-  note.updated = Date.now();
-  const stateEl = document.getElementById('save-state');
-  if(stateEl) stateEl.textContent = 'saving…';
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    saveNotes(notes);
-    if(field === 'title' || field === 'domain') renderNoteList();
-    if(stateEl) stateEl.textContent = 'saved';
-  }, 400);
-}
-
-function exportNotes(){
-  downloadJson(notes, 'ccp-notes-export.json');
-  showToast('Notes exported');
-}
-function importNotes(evt){
-  const file = evt.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try{
-      const incoming = JSON.parse(reader.result);
-      if(!Array.isArray(incoming)) throw new Error('bad format');
-      const existingIds = new Set(notes.map(n=>n.id));
-      let added = 0;
-      incoming.forEach(n=>{
-        if(n && n.id && !existingIds.has(n.id)){ notes.push(n); added++; }
+      document.getElementById('markdown-input').addEventListener('input', (e) => {
+        updateNoteField('body', e.target.value);
+        document.getElementById('preview-col').innerHTML = renderMarkdown(e.target.value) || '<p style="color:var(--text-muted)">Preview appears here.</p>';
       });
-      saveNotes(notes);
-      renderNoteList();
-      showToast(`Imported ${added} note(s)`);
-    }catch(e){
-      showToast('Import failed — invalid file');
     }
-    evt.target.value = '';
-  };
-  reader.readAsText(file);
-}
 
-/* =========================================================
-   QUIZ LOGIC
-========================================================= */
-let quizState = null; // { questions, index, answers:[{qId,selected,correct}], selectedDomains, count }
-let selectedDomains = new Set(DOMAINS.map(d=>d.code));
-let showBankPanel = false;
-let quizMode = 'revision';   // 'revision' (mixed pool, filter by domain) | 'paper' (one full paper)
-let selectedPaperId = null;  // active paper in 'paper' mode; defaults to first available
+    function updateNoteField(field, value) {
+      const note = notes.find(n => n.id === currentNoteId);
+      if (!note) return;
+      note[field] = value;
+      note.updated = Date.now();
+      const stateEl = document.getElementById('save-state');
+      if (stateEl) stateEl.textContent = 'saving…';
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        saveNotes(notes);
+        if (field === 'title' || field === 'domain') renderNoteList();
+        if (stateEl) stateEl.textContent = 'saved';
+      }, 400);
+    }
 
-function domainCounts(){
-  const counts = {};
-  DOMAINS.forEach(d=>counts[d.code]=0);
-  bank.forEach(q=>{ counts[q.domain] = (counts[q.domain]||0) + 1; });
-  return counts;
-}
+    function exportNotes() {
+      downloadJson(notes, 'ccp-notes-export.json');
+      showToast('Notes exported');
+    }
+    function importNotes(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const incoming = JSON.parse(reader.result);
+          if (!Array.isArray(incoming)) throw new Error('bad format');
+          const existingIds = new Set(notes.map(n => n.id));
+          let added = 0;
+          incoming.forEach(n => {
+            if (n && n.id && !existingIds.has(n.id)) { notes.push(n); added++; }
+          });
+          saveNotes(notes);
+          renderNoteList();
+          showToast(`Imported ${added} note(s)`);
+        } catch (e) {
+          showToast('Import failed — invalid file');
+        }
+        evt.target.value = '';
+      };
+      reader.readAsText(file);
+    }
 
-function renderQuizSetup(){
-  const wrap = document.getElementById('quiz-wrap');
-  const counts = domainCounts();
-  const relevantDomains = DOMAINS.filter(d=>d.code!=='OTH' || counts['OTH']>0);
-  const totalAvailable = relevantDomains.filter(d=>selectedDomains.has(d.code)).reduce((s,d)=>s+counts[d.code],0);
-  const last3 = history.slice(-5).reverse();
-  const avgScore = history.length ? Math.round(history.reduce((s,h)=>s+h.pct,0)/history.length) : null;
+    /* =========================================================
+       QUIZ LOGIC
+    ========================================================= */
+    let quizState = null; // { questions, index, answers:[{qId,selected,correct}], selectedDomains, count }
+    let selectedDomains = new Set(DOMAINS.map(d => d.code));
+    let showBankPanel = false;
+    let quizMode = 'revision';   // 'revision' (mixed pool, filter by domain) | 'paper' (one full paper)
+    let selectedPaperId = null;  // active paper in 'paper' mode; defaults to first available
 
-  const papers = listPapers();
-  // Keep the selected paper valid: default to the first available.
-  if(quizMode==='paper' && !papers.some(p=>p.paperId===selectedPaperId)){
-    selectedPaperId = papers.length ? papers[0].paperId : null;
-  }
+    function domainCounts() {
+      const counts = {};
+      DOMAINS.forEach(d => counts[d.code] = 0);
+      bank.forEach(q => { counts[q.domain] = (counts[q.domain] || 0) + 1; });
+      return counts;
+    }
 
-  // Body differs by mode.
-  let modeBody = '';
-  if(quizMode==='paper'){
-    modeBody = papers.length ? `
+    function renderQuizSetup() {
+      const wrap = document.getElementById('quiz-wrap');
+      const counts = domainCounts();
+      const relevantDomains = DOMAINS.filter(d => d.code !== 'OTH' || counts['OTH'] > 0);
+      const totalAvailable = relevantDomains.filter(d => selectedDomains.has(d.code)).reduce((s, d) => s + counts[d.code], 0);
+      const last3 = history.slice(-5).reverse();
+      const avgScore = history.length ? Math.round(history.reduce((s, h) => s + h.pct, 0) / history.length) : null;
+
+      const papers = listPapers();
+      // Keep the selected paper valid: default to the first available.
+      if (quizMode === 'paper' && !papers.some(p => p.paperId === selectedPaperId)) {
+        selectedPaperId = papers.length ? papers[0].paperId : null;
+      }
+
+      // Body differs by mode.
+      let modeBody = '';
+      if (quizMode === 'paper') {
+        modeBody = papers.length ? `
       <div class="field-row">
         <label for="paper-select">Practice paper</label>
         <select id="paper-select" onchange="selectPaper(this.value)">
-          ${papers.map(p=>`<option value="${p.paperId}" ${p.paperId===selectedPaperId?'selected':''}>${escapeHtml(p.paperName)} (${p.count} Qs)</option>`).join('')}
+          ${papers.map(p => `<option value="${p.paperId}" ${p.paperId === selectedPaperId ? 'selected' : ''}>${escapeHtml(p.paperName)} (${p.count} Qs)</option>`).join('')}
         </select>
       </div>
       <button class="primary-btn" id="start-btn" onclick="startQuiz()">Start paper →</button>
     ` : `
       <div class="paper-hint">No practice papers found. Add one by copying <code>questions/papers/paper-01.js</code> and registering it with a <code>&lt;script&gt;</code> tag in this file.</div>
     `;
-  } else {
-    // Spaced-repetition breakdown over the currently selected revision pool.
-    const revPool = bank.filter(q=>selectedDomains.has(q.domain));
-    const unseenCount = revPool.filter(q=>{ const s=stats[q.id]; return !s || s.seen===0; }).length;
-    const dueCount = revPool.filter(q=>{ const s=stats[q.id]; return s && s.seen>0 && isDue(q.id); }).length;
-    const masteredCount = revPool.filter(q=>{ const s=stats[q.id]; return s && s.level>=5; }).length;
+      } else {
+        // Spaced-repetition breakdown over the currently selected revision pool.
+        const revPool = bank.filter(q => selectedDomains.has(q.domain));
+        const unseenCount = revPool.filter(q => { const s = stats[q.id]; return !s || s.seen === 0; }).length;
+        const dueCount = revPool.filter(q => { const s = stats[q.id]; return s && s.seen > 0 && isDue(q.id); }).length;
+        const masteredCount = revPool.filter(q => { const s = stats[q.id]; return s && s.level >= 5; }).length;
 
-    modeBody = `
+        modeBody = `
       <div class="domain-chips" id="domain-chips">
-        ${relevantDomains.map(d=>`
-          <button class="chip ${selectedDomains.has(d.code)?'active':''}" onclick="toggleDomain('${d.code}')">
+        ${relevantDomains.map(d => `
+          <button class="chip ${selectedDomains.has(d.code) ? 'active' : ''}" onclick="toggleDomain('${d.code}')">
             <span class="badge ${d.code}">${d.code}</span>${d.name} <span class="count">${counts[d.code]}</span>
           </button>
         `).join('')}
@@ -1057,26 +1858,26 @@ function renderQuizSetup(){
       <div class="field-row">
         <label for="qcount">Number of questions</label>
         <select id="qcount">
-          ${[5,10,15,20,50].filter(n=>n<=Math.max(totalAvailable,5)||n===5).map(n=>`<option value="${n}" ${n===20?'selected':''}>${n}</option>`).join('')}
+          ${[5, 10, 15, 20, 50].filter(n => n <= Math.max(totalAvailable, 5) || n === 5).map(n => `<option value="${n}" ${n === 20 ? 'selected' : ''}>${n}</option>`).join('')}
           <option value="ALL">All (${totalAvailable})</option>
           <option value="UNLIMITED">Unlimited (up to ${totalAvailable}) — end anytime</option>
         </select>
       </div>
 
-      <button class="primary-btn" id="start-btn" ${totalAvailable===0?'disabled':''} onclick="startQuiz()">Start quiz →</button>
+      <button class="primary-btn" id="start-btn" ${totalAvailable === 0 ? 'disabled' : ''} onclick="startQuiz()">Start quiz →</button>
       <button class="ghost-btn" style="flex:none; padding:8px 14px; margin-top:10px;" onclick="resetProgress()">Reset progress</button>
-      ${totalAvailable===0?'<div style="color:var(--error); font-size:12px; margin-top:10px; font-family:var(--mono);">Select at least one domain with questions.</div>':''}
+      ${totalAvailable === 0 ? '<div style="color:var(--error); font-size:12px; margin-top:10px; font-family:var(--mono);">Select at least one domain with questions.</div>' : ''}
     `;
-  }
+      }
 
-  wrap.innerHTML = `
+      wrap.innerHTML = `
     <div class="setup-card">
       <h2>Practice quiz</h2>
       <p class="lede">Practice a single paper, or mix every question for revision. Questions and results are stored locally in your browser.</p>
 
       <div class="mode-toggle" id="mode-toggle">
-        <button class="${quizMode==='paper'?'active':''}" onclick="setQuizMode('paper')">Practice paper</button>
-        <button class="${quizMode==='revision'?'active':''}" onclick="setQuizMode('revision')">Revision (mixed)</button>
+        <button class="${quizMode === 'paper' ? 'active' : ''}" onclick="setQuizMode('paper')">Practice paper</button>
+        <button class="${quizMode === 'revision' ? 'active' : ''}" onclick="setQuizMode('revision')">Revision (mixed)</button>
       </div>
 
       ${modeBody}
@@ -1084,22 +1885,22 @@ function renderQuizSetup(){
       <div class="stats-strip">
         <div class="stat-tile"><div class="num">${bank.length}</div><div class="lbl">Total questions</div></div>
         <div class="stat-tile"><div class="num">${history.length}</div><div class="lbl">Quizzes taken</div></div>
-        <div class="stat-tile"><div class="num">${avgScore===null?'—':avgScore+'%'}</div><div class="lbl">Average score</div></div>
+        <div class="stat-tile"><div class="num">${avgScore === null ? '—' : avgScore + '%'}</div><div class="lbl">Average score</div></div>
       </div>
 
       ${last3.length ? `<div style="margin-top:18px;">
         <div style="font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Recent attempts</div>
         <div style="display:flex; flex-direction:column; gap:6px;">
-          ${last3.map(h=>`<div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--text-dim); background:var(--panel-alt); border:1px solid var(--border-soft); border-radius:6px; padding:8px 12px;">
-            <span>${new Date(h.date).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})} · ${h.domains.join(', ')}</span>
-            <span style="color:${h.pct>=70?'var(--success)':'var(--error)'}; font-family:var(--mono);">${h.correct}/${h.total} (${h.pct}%)</span>
+          ${last3.map(h => `<div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--text-dim); background:var(--panel-alt); border:1px solid var(--border-soft); border-radius:6px; padding:8px 12px;">
+            <span>${new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${h.domains.join(', ')}</span>
+            <span style="color:${h.pct >= 70 ? 'var(--success)' : 'var(--error)'}; font-family:var(--mono);">${h.correct}/${h.total} (${h.pct}%)</span>
           </div>`).join('')}
         </div>
       </div>` : ''}
     </div>
 
     <div class="bank-toggle-row" style="margin-top:22px;">
-      <button class="ghost-btn" style="flex:none; padding:8px 14px;" onclick="toggleBankPanel()">${showBankPanel?'Hide':'Manage'} question bank (${bank.length})</button>
+      <button class="ghost-btn" style="flex:none; padding:8px 14px;" onclick="toggleBankPanel()">${showBankPanel ? 'Hide' : 'Manage'} question bank (${bank.length})</button>
       <div style="display:flex; gap:8px;">
         <button class="ghost-btn" style="flex:none; padding:8px 14px;" onclick="exportBank()">Export bank</button>
         <button class="ghost-btn" style="flex:none; padding:8px 14px;" onclick="document.getElementById('import-bank-file').click()">Import bank</button>
@@ -1107,20 +1908,20 @@ function renderQuizSetup(){
       </div>
     </div>
 
-    <div class="bank-panel ${showBankPanel?'show':''}" id="bank-panel">
+    <div class="bank-panel ${showBankPanel ? 'show' : ''}" id="bank-panel">
       <div class="bank-toolbar">
         <button class="primary-btn" style="padding:8px 16px; font-size:12.5px;" onclick="openQuestionModal()">+ Add question</button>
       </div>
       <div class="bank-list">
-        ${bank.map(q=>`
+        ${bank.map(q => `
           <div class="bank-row">
             <div class="bank-row-head">
               <span class="badge ${q.domain}">${q.domain}</span>
               <span class="bank-row-q">${escapeHtml(q.q)}</span>
               <div class="bank-row-actions">
                 ${q.readOnly
-                  ? `<span title="Loaded from /questions file — edit the .js file to change" style="color:var(--text-muted); font-family:var(--mono); font-size:10px;">file</span>`
-                  : `<button onclick="openQuestionModal('${q.id}')" title="Edit">✎</button>
+          ? `<span title="Loaded from /questions file — edit the .js file to change" style="color:var(--text-muted); font-family:var(--mono); font-size:10px;">file</span>`
+          : `<button onclick="openQuestionModal('${q.id}')" title="Edit">✎</button>
                      <button onclick="deleteQuestion('${q.id}')" title="Delete">✕</button>`}
               </div>
             </div>
@@ -1129,127 +1930,127 @@ function renderQuizSetup(){
       </div>
     </div>
   `;
-}
-
-function toggleDomain(code){
-  if(selectedDomains.has(code)) selectedDomains.delete(code);
-  else selectedDomains.add(code);
-  renderQuizSetup();
-}
-function toggleBankPanel(){ showBankPanel = !showBankPanel; renderQuizSetup(); }
-function setQuizMode(mode){ quizMode = mode; renderQuizSetup(); }
-function resetProgress(){
-  if(!confirm('Reset all revision progress (seen/correct/level tracking)? Quiz history is kept.')) return;
-  stats = {}; saveStats(stats); renderQuizSetup(); showToast('Progress reset');
-}
-function selectPaper(id){ selectedPaperId = id; }
-
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-
-/* ---- Spaced repetition (Leitner boxes, calendar-time schedule) ----
-   Level = index into LEITNER_DAYS = days to wait before a question is due
-   again. Level 0/1 are always due; higher levels stay suppressed until the
-   wait elapses. Unseen questions are treated as maximally due. */
-const LEITNER_DAYS = [0, 0, 1, 3, 7, 16];
-const DAY_MS = 86400000;
-
-function isDue(qId){
-  const s = stats[qId];
-  if(!s || s.seen === 0) return true;               // never seen -> always due
-  const waitMs = LEITNER_DAYS[s.level] * DAY_MS;
-  return (Date.now() - (s.lastSeen || 0)) >= waitMs;
-}
-
-/* Revision selection weight: unseen highest, due-and-wrong-prone high,
-   mastered/not-due small but non-zero (so nothing is ever fully excluded). */
-function revisionWeight(qId){
-  const s = stats[qId];
-  if(!s || s.seen === 0) return 12;                 // never seen
-  if(isDue(qId)) return 6 + (s.wrong * 2) + (5 - s.level);
-  return 1;                                          // known & not due
-}
-
-/* Weighted random sample without replacement, biased by revisionWeight. */
-function weightedSample(pool, n){
-  const remaining = pool.slice();
-  const picked = [];
-  const target = Math.min(n, remaining.length);
-  while(picked.length < target && remaining.length){
-    let total = 0;
-    for(const q of remaining) total += revisionWeight(q.id);
-    let roll = Math.random() * total;
-    let idx = 0;
-    for(; idx < remaining.length; idx++){
-      roll -= revisionWeight(remaining[idx].id);
-      if(roll <= 0) break;
     }
-    if(idx >= remaining.length) idx = remaining.length - 1;   // float safety
-    picked.push(remaining.splice(idx, 1)[0]);
-  }
-  return picked;
-}
 
-function startQuiz(){
-  let questions, meta;
-  if(quizMode==='paper'){
-    // Run the whole paper in file order (exam-like). Option order still shuffles per question.
-    const paper = listPapers().find(p=>p.paperId===selectedPaperId);
-    questions = bank.filter(q=>q.paperId===selectedPaperId);
-    if(!questions.length){ showToast('That paper has no questions'); return; }
-    meta = { mode:'paper', paperId:selectedPaperId, paperName: paper ? paper.paperName : selectedPaperId, domains:[] };
-  } else {
-    const pool = bank.filter(q=>selectedDomains.has(q.domain));
-    const countSel = document.getElementById('qcount').value;
-    const unlimited = countSel === 'UNLIMITED';
-    const n = countSel === 'ALL' || unlimited ? pool.length : Math.min(parseInt(countSel,10), pool.length);
-    // Weighted by spaced repetition: unseen and due-incorrect questions
-    // dominate, mastered ones still appear occasionally. ("ALL"/"UNLIMITED"
-    // select the whole pool anyway, just in weighted order.)
-    questions = weightedSample(pool, n);
-    meta = { mode:'revision', domains: Array.from(selectedDomains), unlimited };
-  }
-  quizState = {
-    questions,
-    index: 0,
-    answers: [],
-    domains: meta.domains,
-    mode: meta.mode,
-    paperName: meta.paperName || null,
-    unlimited: !!meta.unlimited,
-    answeredCurrent: false
-  };
-  renderQuizQuestion();
-}
+    function toggleDomain(code) {
+      if (selectedDomains.has(code)) selectedDomains.delete(code);
+      else selectedDomains.add(code);
+      renderQuizSetup();
+    }
+    function toggleBankPanel() { showBankPanel = !showBankPanel; renderQuizSetup(); }
+    function setQuizMode(mode) { quizMode = mode; renderQuizSetup(); }
+    function resetProgress() {
+      if (!confirm('Reset all revision progress (seen/correct/level tracking)? Quiz history is kept.')) return;
+      stats = {}; saveStats(stats); renderQuizSetup(); showToast('Progress reset');
+    }
+    function selectPaper(id) { selectedPaperId = id; }
 
-function renderQuizQuestion(){
-  const wrap = document.getElementById('quiz-wrap');
-  const st = quizState;
-  const q = st.questions[st.index];
-  const pct = Math.round((st.index)/st.questions.length*100);
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; }
+      return a;
+    }
 
-  const optionOrder = q._order || (q._order = shuffle(q.choices.map((c,i)=>i)));
-  const isMulti = q.type === 'multiple-select';
-  st.picked = new Set();
+    /* ---- Spaced repetition (Leitner boxes, calendar-time schedule) ----
+       Level = index into LEITNER_DAYS = days to wait before a question is due
+       again. Level 0/1 are always due; higher levels stay suppressed until the
+       wait elapses. Unseen questions are treated as maximally due. */
+    const LEITNER_DAYS = [0, 0, 1, 3, 7, 16];
+    const DAY_MS = 86400000;
 
-  const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
+    function isDue(qId) {
+      const s = stats[qId];
+      if (!s || s.seen === 0) return true;               // never seen -> always due
+      const waitMs = LEITNER_DAYS[s.level] * DAY_MS;
+      return (Date.now() - (s.lastSeen || 0)) >= waitMs;
+    }
 
-  wrap.innerHTML = `
+    /* Revision selection weight: unseen highest, due-and-wrong-prone high,
+       mastered/not-due small but non-zero (so nothing is ever fully excluded). */
+    function revisionWeight(qId) {
+      const s = stats[qId];
+      if (!s || s.seen === 0) return 12;                 // never seen
+      if (isDue(qId)) return 6 + (s.wrong * 2) + (5 - s.level);
+      return 1;                                          // known & not due
+    }
+
+    /* Weighted random sample without replacement, biased by revisionWeight. */
+    function weightedSample(pool, n) {
+      const remaining = pool.slice();
+      const picked = [];
+      const target = Math.min(n, remaining.length);
+      while (picked.length < target && remaining.length) {
+        let total = 0;
+        for (const q of remaining) total += revisionWeight(q.id);
+        let roll = Math.random() * total;
+        let idx = 0;
+        for (; idx < remaining.length; idx++) {
+          roll -= revisionWeight(remaining[idx].id);
+          if (roll <= 0) break;
+        }
+        if (idx >= remaining.length) idx = remaining.length - 1;   // float safety
+        picked.push(remaining.splice(idx, 1)[0]);
+      }
+      return picked;
+    }
+
+    function startQuiz() {
+      let questions, meta;
+      if (quizMode === 'paper') {
+        // Run the whole paper in file order (exam-like). Option order still shuffles per question.
+        const paper = listPapers().find(p => p.paperId === selectedPaperId);
+        questions = bank.filter(q => q.paperId === selectedPaperId);
+        if (!questions.length) { showToast('That paper has no questions'); return; }
+        meta = { mode: 'paper', paperId: selectedPaperId, paperName: paper ? paper.paperName : selectedPaperId, domains: [] };
+      } else {
+        const pool = bank.filter(q => selectedDomains.has(q.domain));
+        const countSel = document.getElementById('qcount').value;
+        const unlimited = countSel === 'UNLIMITED';
+        const n = countSel === 'ALL' || unlimited ? pool.length : Math.min(parseInt(countSel, 10), pool.length);
+        // Weighted by spaced repetition: unseen and due-incorrect questions
+        // dominate, mastered ones still appear occasionally. ("ALL"/"UNLIMITED"
+        // select the whole pool anyway, just in weighted order.)
+        questions = weightedSample(pool, n);
+        meta = { mode: 'revision', domains: Array.from(selectedDomains), unlimited };
+      }
+      quizState = {
+        questions,
+        index: 0,
+        answers: [],
+        domains: meta.domains,
+        mode: meta.mode,
+        paperName: meta.paperName || null,
+        unlimited: !!meta.unlimited,
+        answeredCurrent: false
+      };
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const wrap = document.getElementById('quiz-wrap');
+      const st = quizState;
+      const q = st.questions[st.index];
+      const pct = Math.round((st.index) / st.questions.length * 100);
+
+      const optionOrder = q._order || (q._order = shuffle(q.choices.map((c, i) => i)));
+      const isMulti = q.type === 'multiple-select';
+      st.picked = new Set();
+
+      const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
+
+      wrap.innerHTML = `
     <div class="quiz-header">
       <div class="progress-track"><div class="progress-fill" style="width:${st.unlimited ? 100 : pct}%"></div></div>
-      <div class="q-counter">${st.unlimited ? `Q${st.index+1} · unlimited (max ${st.questions.length})` : `${st.index+1} / ${st.questions.length}`}</div>
+      <div class="q-counter">${st.unlimited ? `Q${st.index + 1} · unlimited (max ${st.questions.length})` : `${st.index + 1} / ${st.questions.length}`}</div>
     </div>
     <div class="question-card">
       ${isMulti ? `<div class="multi-hint">Select ${nAnswers} — then press Enter to check</div>` : ''}
       ${q.deprecated ? `<div class="deprecated-badge">⚠️ ${escapeHtml(q.deprecated)} is deprecated — no longer on the current exam</div>` : ''}
       <p class="q-text">${escapeHtml(q.q)}</p>
       <div class="choices" id="choices">
-        ${optionOrder.map(i=>`
+        ${optionOrder.map(i => `
           <div class="choice" data-idx="${i}" onclick="${isMulti ? `togglePick(${i})` : `selectAnswer(${i})`}">
-            <span class="letter">${optionOrder.indexOf(i)+1}</span>
+            <span class="letter">${optionOrder.indexOf(i) + 1}</span>
             <span>${escapeHtml(q.choices[i])}</span>
           </div>
         `).join('')}
@@ -1263,309 +2064,311 @@ function renderQuizQuestion(){
           ${isMulti ? `<button class="primary-btn" id="check-btn" disabled onclick="submitMulti()">Check answer</button>` : ''}
           ${st.unlimited ? `<button class="ghost-btn" style="flex:none; padding:8px 14px;" onclick="finishQuiz()">End session</button>` : ''}
         </div>
-        <button class="primary-btn" id="next-btn" disabled onclick="nextQuestion()">${st.unlimited || st.index !== st.questions.length-1 ? 'Next' : 'Finish'} →</button>
+        <button class="primary-btn" id="next-btn" disabled onclick="nextQuestion()">${st.unlimited || st.index !== st.questions.length - 1 ? 'Next' : 'Finish'} →</button>
       </div>
     </div>
   `;
-}
-
-/* Reveal grading for the current question and record the answer. `selected` is
-   an array of chosen indices. */
-function gradeCurrent(selected){
-  const st = quizState;
-  if(st.answeredCurrent) return;
-  st.answeredCurrent = true;
-  const q = st.questions[st.index];
-  const correctSet = new Set(q.correct);
-  const selectedSet = new Set(selected);
-  const isCorrect = correctSet.size === selectedSet.size &&
-    q.correct.every(i=>selectedSet.has(i));
-
-  // Record spaced-repetition stats: correct promotes a Leitner level, wrong
-  // drops it back to "due soon" (level 1). Drives revision selection weight.
-  const s = stats[q.id] || { level:0, seen:0, correct:0, wrong:0, lastSeen:null };
-  s.seen++; s.lastSeen = Date.now();
-  if(isCorrect){ s.correct++; s.level = Math.min(5, s.level + 1); }
-  else { s.wrong++; s.level = 1; }
-  stats[q.id] = s; saveStats(stats);
-
-  st.answers.push({
-    qId: q.id, q: q.q, domain: q.domain, type: q.type,
-    selected: selected.slice(), correct: q.correct.slice(),
-    isCorrect, choices: q.choices, explain: q.explain
-  });
-
-  document.querySelectorAll('#choices .choice').forEach(el=>{
-    const i = parseInt(el.dataset.idx,10);
-    el.classList.remove('picked');
-    el.classList.add('disabled');
-    const isChosen = selectedSet.has(i);
-    const isRight = correctSet.has(i);
-    if(isChosen && isRight) el.classList.add('correct');
-    else if(isChosen && !isRight) el.classList.add('incorrect');
-    else if(!isChosen && isRight) el.classList.add('missed');
-    else el.classList.add('dim');
-  });
-
-  const explainBox = document.getElementById('explain-box');
-  document.getElementById('explain-text').textContent = q.explain || 'No explanation provided for this question.';
-  explainBox.classList.add('show');
-  document.getElementById('next-btn').disabled = false;
-  const checkBtn = document.getElementById('check-btn');
-  if(checkBtn) checkBtn.disabled = true;
-}
-
-/* Single-answer path: clicking a choice grades immediately. */
-function selectAnswer(idx){ gradeCurrent([idx]); }
-
-/* Multi-select: toggle a choice's picked state before submitting. */
-function togglePick(idx){
-  const st = quizState;
-  if(st.answeredCurrent) return;
-  if(st.picked.has(idx)) st.picked.delete(idx);
-  else st.picked.add(idx);
-  const el = document.querySelector(`#choices .choice[data-idx="${idx}"]`);
-  if(el) el.classList.toggle('picked', st.picked.has(idx));
-  const checkBtn = document.getElementById('check-btn');
-  const q = st.questions[st.index];
-  const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
-  if(checkBtn) checkBtn.disabled = st.picked.size !== nAnswers;
-}
-
-function submitMulti(){
-  const st = quizState;
-  gradeCurrent(Array.from(st.picked));
-}
-
-function nextQuestion(){
-  const st = quizState;
-  st.index++;
-  st.answeredCurrent = false;
-  if(st.index >= st.questions.length){
-    finishQuiz();
-  } else {
-    renderQuizQuestion();
-  }
-}
-
-/* Keyboard shortcuts for the quiz: number keys pick options (by display
-   position), Enter checks a multi-select or advances an answered question. */
-function quizKeyHandler(e){
-  const st = quizState;
-  const choicesEl = document.getElementById('choices');
-  if(!st || !st.questions || !st.questions.length || !choicesEl) return;
-  const tag = (document.activeElement && document.activeElement.tagName) || '';
-  if(tag === 'INPUT' || tag === 'TEXTAREA') return;
-
-  const q = st.questions[st.index];
-  const isMulti = q.type === 'multiple-select';
-
-  if(/^[1-9]$/.test(e.key)){
-    if(st.answeredCurrent) return;            // already graded; ignore
-    const pos = parseInt(e.key,10) - 1;       // 0-based display position
-    const order = q._order || [];
-    if(pos >= order.length) return;           // no such option
-    const originalIdx = order[pos];           // map display pos -> original index
-    e.preventDefault();
-    if(isMulti) togglePick(originalIdx);
-    else selectAnswer(originalIdx);
-    return;
-  }
-
-  if(e.key === 'Enter'){
-    e.preventDefault();
-    if(!st.answeredCurrent){
-      if(isMulti){
-        const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
-        if(st.picked.size === nAnswers) submitMulti();  // exactly N required
-      }
-      // single-choice: nothing to do until a number is pressed (can't skip)
-      return;
     }
-    nextQuestion();  // already graded -> advance (Next / Finish)
-  }
-}
-document.addEventListener('keydown', quizKeyHandler);
 
-function finishQuiz(){
-  const st = quizState;
-  const correct = st.answers.filter(a=>a.isCorrect).length;
-  const total = st.answers.length;
-  const pct = total ? Math.round(correct/total*100) : 0;
-  // Label the record: paper name for paper mode, domain list for revision.
-  const label = st.mode==='paper' && st.paperName ? [st.paperName] : st.domains.map(d=>d);
-  const record = { date: Date.now(), correct, total, pct, domains: label };
-  history.push(record);
-  if(history.length > 50) history = history.slice(-50);
-  saveHistory(history);
+    /* Reveal grading for the current question and record the answer. `selected` is
+       an array of chosen indices. */
+    function gradeCurrent(selected) {
+      const st = quizState;
+      if (st.answeredCurrent) return;
+      st.answeredCurrent = true;
+      const q = st.questions[st.index];
+      const correctSet = new Set(q.correct);
+      const selectedSet = new Set(selected);
+      const isCorrect = correctSet.size === selectedSet.size &&
+        q.correct.every(i => selectedSet.has(i));
 
-  const missed = st.answers.filter(a=>!a.isCorrect);
-  const wrap = document.getElementById('quiz-wrap');
-  wrap.innerHTML = `
+      // Record spaced-repetition stats: correct promotes a Leitner level, wrong
+      // drops it back to "due soon" (level 1). Drives revision selection weight.
+      const s = stats[q.id] || { level: 0, seen: 0, correct: 0, wrong: 0, lastSeen: null };
+      s.seen++; s.lastSeen = Date.now();
+      if (isCorrect) { s.correct++; s.level = Math.min(5, s.level + 1); }
+      else { s.wrong++; s.level = 1; }
+      stats[q.id] = s; saveStats(stats);
+
+      st.answers.push({
+        qId: q.id, q: q.q, domain: q.domain, type: q.type,
+        selected: selected.slice(), correct: q.correct.slice(),
+        isCorrect, choices: q.choices, explain: q.explain
+      });
+
+      document.querySelectorAll('#choices .choice').forEach(el => {
+        const i = parseInt(el.dataset.idx, 10);
+        el.classList.remove('picked');
+        el.classList.add('disabled');
+        const isChosen = selectedSet.has(i);
+        const isRight = correctSet.has(i);
+        if (isChosen && isRight) el.classList.add('correct');
+        else if (isChosen && !isRight) el.classList.add('incorrect');
+        else if (!isChosen && isRight) el.classList.add('missed');
+        else el.classList.add('dim');
+      });
+
+      const explainBox = document.getElementById('explain-box');
+      document.getElementById('explain-text').textContent = q.explain || 'No explanation provided for this question.';
+      explainBox.classList.add('show');
+      document.getElementById('next-btn').disabled = false;
+      const checkBtn = document.getElementById('check-btn');
+      if (checkBtn) checkBtn.disabled = true;
+    }
+
+    /* Single-answer path: clicking a choice grades immediately. */
+    function selectAnswer(idx) { gradeCurrent([idx]); }
+
+    /* Multi-select: toggle a choice's picked state before submitting. */
+    function togglePick(idx) {
+      const st = quizState;
+      if (st.answeredCurrent) return;
+      if (st.picked.has(idx)) st.picked.delete(idx);
+      else st.picked.add(idx);
+      const el = document.querySelector(`#choices .choice[data-idx="${idx}"]`);
+      if (el) el.classList.toggle('picked', st.picked.has(idx));
+      const checkBtn = document.getElementById('check-btn');
+      const q = st.questions[st.index];
+      const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
+      if (checkBtn) checkBtn.disabled = st.picked.size !== nAnswers;
+    }
+
+    function submitMulti() {
+      const st = quizState;
+      gradeCurrent(Array.from(st.picked));
+    }
+
+    function nextQuestion() {
+      const st = quizState;
+      st.index++;
+      st.answeredCurrent = false;
+      if (st.index >= st.questions.length) {
+        finishQuiz();
+      } else {
+        renderQuizQuestion();
+      }
+    }
+
+    /* Keyboard shortcuts for the quiz: number keys pick options (by display
+       position), Enter checks a multi-select or advances an answered question. */
+    function quizKeyHandler(e) {
+      const st = quizState;
+      const choicesEl = document.getElementById('choices');
+      if (!st || !st.questions || !st.questions.length || !choicesEl) return;
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+      const q = st.questions[st.index];
+      const isMulti = q.type === 'multiple-select';
+
+      if (/^[1-9]$/.test(e.key)) {
+        if (st.answeredCurrent) return;            // already graded; ignore
+        const pos = parseInt(e.key, 10) - 1;       // 0-based display position
+        const order = q._order || [];
+        if (pos >= order.length) return;           // no such option
+        const originalIdx = order[pos];           // map display pos -> original index
+        e.preventDefault();
+        if (isMulti) togglePick(originalIdx);
+        else selectAnswer(originalIdx);
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!st.answeredCurrent) {
+          if (isMulti) {
+            const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
+            if (st.picked.size === nAnswers) submitMulti();  // exactly N required
+          }
+          // single-choice: nothing to do until a number is pressed (can't skip)
+          return;
+        }
+        nextQuestion();  // already graded -> advance (Next / Finish)
+      }
+    }
+    document.addEventListener('keydown', quizKeyHandler);
+
+    function finishQuiz() {
+      const st = quizState;
+      const correct = st.answers.filter(a => a.isCorrect).length;
+      const total = st.answers.length;
+      const pct = total ? Math.round(correct / total * 100) : 0;
+      // Label the record: paper name for paper mode, domain list for revision.
+      const label = st.mode === 'paper' && st.paperName ? [st.paperName] : st.domains.map(d => d);
+      const record = { date: Date.now(), correct, total, pct, domains: label };
+      history.push(record);
+      if (history.length > 50) history = history.slice(-50);
+      saveHistory(history);
+
+      const missed = st.answers.filter(a => !a.isCorrect);
+      const wrap = document.getElementById('quiz-wrap');
+      wrap.innerHTML = `
     <div class="results-card">
       <div style="font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em;">Quiz complete</div>
       <div class="results-score">${pct}%</div>
       <div class="results-sub">${correct} of ${total} correct</div>
       <div class="results-actions">
         <button class="primary-btn" onclick="renderQuizSetup()">Back to setup</button>
-        <button class="ghost-btn" style="flex:none; padding:9px 16px;" onclick="retakeMissed()" ${missed.length===0?'disabled':''}>Retake missed (${missed.length})</button>
+        <button class="ghost-btn" style="flex:none; padding:9px 16px;" onclick="retakeMissed()" ${missed.length === 0 ? 'disabled' : ''}>Retake missed (${missed.length})</button>
       </div>
       ${missed.length ? `
         <div style="text-align:left; font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">Review missed questions</div>
         <div class="review-list">
-          ${missed.map(a=>{
-            const sel = Array.isArray(a.selected) ? a.selected : (a.selectedIdx!=null?[a.selectedIdx]:[]);
-            const cor = Array.isArray(a.correct) ? a.correct : (a.correctIdx!=null?[a.correctIdx]:[]);
-            const yours = sel.length ? sel.map(i=>escapeHtml(a.choices[i])).join(', ') : '(no answer)';
-            const right = cor.map(i=>escapeHtml(a.choices[i])).join(', ');
-            return `
+          ${missed.map(a => {
+        const sel = Array.isArray(a.selected) ? a.selected : (a.selectedIdx != null ? [a.selectedIdx] : []);
+        const cor = Array.isArray(a.correct) ? a.correct : (a.correctIdx != null ? [a.correctIdx] : []);
+        const yours = sel.length ? sel.map(i => escapeHtml(a.choices[i])).join(', ') : '(no answer)';
+        const right = cor.map(i => escapeHtml(a.choices[i])).join(', ');
+        return `
             <div class="review-item">
               <div class="rq">${escapeHtml(a.q)}</div>
               <div class="ra">Your answer: <span class="wrong">${yours}</span> — Correct: <b>${right}</b></div>
             </div>
-          `;}).join('')}
+          `;
+      }).join('')}
         </div>
       ` : `<p style="color:var(--success); font-size:13px;">Perfect score — nice work.</p>`}
     </div>
   `;
-}
+    }
 
-function retakeMissed(){
-  const st = quizState;
-  const missedIds = new Set(st.answers.filter(a=>!a.isCorrect).map(a=>a.qId));
-  const questions = st.questions.filter(q=>missedIds.has(q.id));
-  quizState = { questions, index:0, answers:[], domains: st.domains, mode: st.mode, paperName: st.paperName, answeredCurrent:false };
-  renderQuizQuestion();
-}
+    function retakeMissed() {
+      const st = quizState;
+      const missedIds = new Set(st.answers.filter(a => !a.isCorrect).map(a => a.qId));
+      const questions = st.questions.filter(q => missedIds.has(q.id));
+      quizState = { questions, index: 0, answers: [], domains: st.domains, mode: st.mode, paperName: st.paperName, answeredCurrent: false };
+      renderQuizQuestion();
+    }
 
-/* ---- Bank management ---- */
-function openQuestionModal(id){
-  const editing = id ? bank.find(q=>q.id===id) : null;
-  const overlay = document.getElementById('modal-overlay');
-  const modal = document.getElementById('modal-content');
-  const choices = editing ? editing.choices : ['','','',''];
-  modal.innerHTML = `
+    /* ---- Bank management ---- */
+    function openQuestionModal(id) {
+      const editing = id ? bank.find(q => q.id === id) : null;
+      const overlay = document.getElementById('modal-overlay');
+      const modal = document.getElementById('modal-content');
+      const choices = editing ? editing.choices : ['', '', '', ''];
+      modal.innerHTML = `
     <h3>${editing ? 'Edit question' : 'Add question'}</h3>
     <label>Domain</label>
     <select id="mq-domain">
-      ${DOMAINS.map(d=>`<option value="${d.code}" ${editing&&editing.domain===d.code?'selected':''}>${d.code} — ${d.name}</option>`).join('')}
+      ${DOMAINS.map(d => `<option value="${d.code}" ${editing && editing.domain === d.code ? 'selected' : ''}>${d.code} — ${d.name}</option>`).join('')}
     </select>
     <label>Question</label>
     <textarea id="mq-question" placeholder="Question text">${editing ? escapeHtml(editing.q) : ''}</textarea>
     <label>Answer choices (select the correct one)</label>
-    ${[0,1,2,3].map(i=>`
+    ${[0, 1, 2, 3].map(i => `
       <div class="opt-row">
-        <input type="radio" name="mq-correct" value="${i}" ${editing && Array.isArray(editing.correct) && editing.correct[0]===i ? 'checked' : (!editing && i===0 ? 'checked': '')}>
-        <input type="text" id="mq-choice-${i}" placeholder="Choice ${String.fromCharCode(65+i)}" value="${escapeHtml(choices[i]||'')}">
+        <input type="radio" name="mq-correct" value="${i}" ${editing && Array.isArray(editing.correct) && editing.correct[0] === i ? 'checked' : (!editing && i === 0 ? 'checked' : '')}>
+        <input type="text" id="mq-choice-${i}" placeholder="Choice ${String.fromCharCode(65 + i)}" value="${escapeHtml(choices[i] || '')}">
       </div>
     `).join('')}
     <label>Explanation (optional)</label>
-    <textarea id="mq-explain" placeholder="Why the correct answer is correct">${editing ? escapeHtml(editing.explain||'') : ''}</textarea>
+    <textarea id="mq-explain" placeholder="Why the correct answer is correct">${editing ? escapeHtml(editing.explain || '') : ''}</textarea>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" onclick="saveQuestionModal(${editing ? `'${editing.id}'` : 'null'})">Save question</button>
     </div>
   `;
-  overlay.classList.add('show');
-}
-function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+      overlay.classList.add('show');
+    }
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
 
-function saveQuestionModal(id){
-  const domain = document.getElementById('mq-domain').value;
-  const qtext = document.getElementById('mq-question').value.trim();
-  const choices = [0,1,2,3].map(i=>document.getElementById(`mq-choice-${i}`).value.trim());
-  const correctRadio = document.querySelector('input[name="mq-correct"]:checked');
-  const explain = document.getElementById('mq-explain').value.trim();
+    function saveQuestionModal(id) {
+      const domain = document.getElementById('mq-domain').value;
+      const qtext = document.getElementById('mq-question').value.trim();
+      const choices = [0, 1, 2, 3].map(i => document.getElementById(`mq-choice-${i}`).value.trim());
+      const correctRadio = document.querySelector('input[name="mq-correct"]:checked');
+      const explain = document.getElementById('mq-explain').value.trim();
 
-  if(!qtext || choices.some(c=>!c) || !correctRadio){
-    showToast('Fill in the question, all 4 choices, and mark the correct one');
-    return;
-  }
-  const correct = [parseInt(correctRadio.value,10)];
+      if (!qtext || choices.some(c => !c) || !correctRadio) {
+        showToast('Fill in the question, all 4 choices, and mark the correct one');
+        return;
+      }
+      const correct = [parseInt(correctRadio.value, 10)];
 
-  if(id){
-    const existing = bank.find(q=>q.id===id);
-    if(existing && existing.readOnly){ showToast('File questions are read-only — edit the .js file'); return; }
-    existing.domain = domain; existing.topic = existing.topic || ''; existing.type = 'single';
-    existing.q = qtext; existing.choices = choices; existing.correct = correct; existing.explain = explain;
-    delete existing._order;
-  } else {
-    bank.push({ id: cryptoId(), domain, topic:'', type:'single', q: qtext, choices, correct, explain, readOnly:false });
-  }
-  saveBank(bank);
-  closeModal();
-  renderQuizSetup();
-  showToast('Question saved');
-}
+      if (id) {
+        const existing = bank.find(q => q.id === id);
+        if (existing && existing.readOnly) { showToast('File questions are read-only — edit the .js file'); return; }
+        existing.domain = domain; existing.topic = existing.topic || ''; existing.type = 'single';
+        existing.q = qtext; existing.choices = choices; existing.correct = correct; existing.explain = explain;
+        delete existing._order;
+      } else {
+        bank.push({ id: cryptoId(), domain, topic: '', type: 'single', q: qtext, choices, correct, explain, readOnly: false });
+      }
+      saveBank(bank);
+      closeModal();
+      renderQuizSetup();
+      showToast('Question saved');
+    }
 
-function deleteQuestion(id){
-  const q = bank.find(q=>q.id===id);
-  if(q && q.readOnly){ showToast('File questions are read-only — edit the .js file'); return; }
-  if(!confirm('Delete this question from your bank?')) return;
-  bank = bank.filter(q=>q.id!==id);
-  saveBank(bank);
-  renderQuizSetup();
-}
-
-function exportBank(){
-  downloadJson(bank, 'ccp-question-bank.json');
-  showToast('Question bank exported');
-}
-function importBank(evt){
-  const file = evt.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try{
-      const incoming = JSON.parse(reader.result);
-      if(!Array.isArray(incoming)) throw new Error('bad format');
-      const existingIds = new Set(bank.map(q=>q.id));
-      let added = 0;
-      incoming.forEach(raw=>{
-        const q = normalizeQuestion(raw);
-        if(q && q.q && q.choices.length && !existingIds.has(q.id)){
-          q.readOnly = false;            // imported questions are user-owned/editable
-          bank.push(q); existingIds.add(q.id); added++;
-        }
-      });
+    function deleteQuestion(id) {
+      const q = bank.find(q => q.id === id);
+      if (q && q.readOnly) { showToast('File questions are read-only — edit the .js file'); return; }
+      if (!confirm('Delete this question from your bank?')) return;
+      bank = bank.filter(q => q.id !== id);
       saveBank(bank);
       renderQuizSetup();
-      showToast(`Imported ${added} question(s)`);
-    }catch(e){
-      showToast('Import failed — invalid file');
     }
-    evt.target.value = '';
-  };
-  reader.readAsText(file);
-}
 
-/* =========================================================
-   UTIL
-========================================================= */
-function downloadJson(data, filename){
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-let toastTimer = null;
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
-}
+    function exportBank() {
+      downloadJson(bank, 'ccp-question-bank.json');
+      showToast('Question bank exported');
+    }
+    function importBank(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const incoming = JSON.parse(reader.result);
+          if (!Array.isArray(incoming)) throw new Error('bad format');
+          const existingIds = new Set(bank.map(q => q.id));
+          let added = 0;
+          incoming.forEach(raw => {
+            const q = normalizeQuestion(raw);
+            if (q && q.q && q.choices.length && !existingIds.has(q.id)) {
+              q.readOnly = false;            // imported questions are user-owned/editable
+              bank.push(q); existingIds.add(q.id); added++;
+            }
+          });
+          saveBank(bank);
+          renderQuizSetup();
+          showToast(`Imported ${added} question(s)`);
+        } catch (e) {
+          showToast('Import failed — invalid file');
+        }
+        evt.target.value = '';
+      };
+      reader.readAsText(file);
+    }
 
-/* =========================================================
-   INIT
-========================================================= */
-renderNoteList();
-renderEditor();
-renderQuizSetup();
-switchView('quiz');   // open on the Quiz tab by default
-</script>
+    /* =========================================================
+       UTIL
+    ========================================================= */
+    function downloadJson(data, filename) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    /* =========================================================
+       INIT
+    ========================================================= */
+    renderNoteList();
+    renderEditor();
+    renderQuizSetup();
+    switchView('quiz');   // open on the Quiz tab by default
+  </script>
 </body>
+
 </html>
