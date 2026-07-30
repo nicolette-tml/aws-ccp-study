@@ -268,7 +268,7 @@ window.QUESTION_FILES.push({
       domain: "VPC",
       topic: "direct-connect",
       type: "multiple-select",
-      question: "A company wants to migrate its applications to a VPC on AWS These applications will need to access on-premises resources. What combination of actions will enable the company to accomplish this goals? (Select TWO)",
+      question: "A company wants to migrate its applications to a VPC on AWS. These applications will need to access on-premises resources. What combination of actions will enable the company to accomplish this goals? (Select TWO)",
       options: [
         "Use the AWS Service Catalog to identify a list of on-premises resources that can be migrated",
         "Build a VPN connection between an on-premises device and a virtual private gateway in the new VPC",

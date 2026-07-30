@@ -80,7 +80,7 @@ window.QUESTION_FILES.push({
       domain: "DBA",
       topic: "qldb",
       type: "single",
-      question: "Which AWS database service proviced historical data of your application changes?",
+      question: "Which AWS database service provides historical data of your application changes?",
       options: ["AWS DocumentDB", "AWS Neptune", "AWS Quantum Ledger Database", "AWS ElastiCache"],
       correctAnswer: [2],
       explanation: "AWS Quantum Ledger Database (QLDB) is an immutable, cryptographically verifiable ledger database that maintains a complete and verifiable history of all application data changes. DocumentDB is for MongoDB workloads, Neptune is a graph database, and ElastiCache is an in-memory caching service—none provide immutable historical audit trails."
