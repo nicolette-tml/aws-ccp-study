@@ -30,6 +30,26 @@
       --radius: 6px;
     }
 
+    /* Light theme: overrides the same variable names, so every component that
+       reads from :root flips automatically. Toggled via html[data-theme]. */
+    html[data-theme="light"] {
+      --bg: #F4F6F8;
+      --panel: #FFFFFF;
+      --panel-alt: #EEF2F6;
+      --panel-raised: #E3EAF1;
+      --border: #D3DBE3;
+      --border-soft: #E2E8EE;
+      --text: #1A2634;
+      --text-dim: #3C4C5E;
+      --text-muted: #6B7C8F;
+      --amber: #B4781F;
+      --amber-dim: #C89A57;
+      --cyan: #2E7D7D;
+      --cyan-dim: #8CBEBE;
+      --success: #2E9E5B;
+      --error: #C93B3B;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -162,6 +182,30 @@
       color: var(--cyan);
     }
 
+    .theme-toggle {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 12px;
+      border-radius: var(--radius);
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
+    }
+
+    .theme-toggle .glyph {
+      font-size: 13px;
+      line-height: 1;
+    }
+
     .badge {
       display: inline-flex;
       align-items: center;
@@ -290,6 +334,15 @@
       background: rgba(130, 180, 210, 0.14);
       color: #8bbcd6;
       border: 1px solid #315466;
+    }
+
+    /* The per-chapter badge colors above are tuned for the dark theme (light text
+       on translucent dark fills). In light mode they wash out, so give every badge
+       a single readable treatment on the light panel. */
+    html[data-theme="light"] .badge {
+      background: var(--panel-alt);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
     }
 
     /* ---------- Quiz view ---------- */
@@ -532,7 +585,7 @@
     }
 
     .q-text {
-      font-size: 16px;
+      font-size: 18px;
       line-height: 1.55;
       margin: 0 0 20px;
     }
@@ -552,7 +605,7 @@
       border-radius: var(--radius);
       padding: 12px 14px;
       cursor: pointer;
-      font-size: 13.5px;
+      font-size: 15px;
       line-height: 1.5;
       color: var(--text-dim);
       transition: border-color .12s ease, background .12s ease;
@@ -564,7 +617,7 @@
 
     .choice .letter {
       font-family: var(--mono);
-      font-size: 11.5px;
+      font-size: 12.5px;
       font-weight: 700;
       width: 20px;
       height: 20px;
@@ -658,7 +711,7 @@
       border: 1px solid var(--border-soft);
       border-left: 3px solid var(--cyan-dim);
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 14.5px;
       line-height: 1.6;
       color: var(--text-dim);
       display: none;
@@ -953,6 +1006,17 @@
     }
 
   </style>
+  <script>
+    /* Apply the saved (or OS-preferred) theme before first paint to avoid a
+       dark->light flash. The toggle button's glyph/label is synced later once
+       the DOM is ready (initTheme). */
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('ccp_theme_v1'); } catch (e) { }
+      var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
 </head>
 
 <body>
@@ -963,6 +1027,9 @@
         <div class="name">CCP // STUDY CONSOLE</div>
         <div class="sub">AWS Certified Cloud Practitioner</div>
       </div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light and dark theme">
+        <span class="glyph" id="theme-glyph">☾</span><span id="theme-label">Dark</span>
+      </button>
     </header>
 
     <!-- QUIZ VIEW -->
@@ -1037,6 +1104,25 @@
     const LS_BANK = 'ccp_bank_v1';
     const LS_HISTORY = 'ccp_history_v1';
     const LS_STATS = 'ccp_stats_v1';
+    const LS_THEME = 'ccp_theme_v1';
+
+    /* ---- Theme (light/dark) ----
+       The initial theme is applied in <head> before paint. Here we keep the
+       toggle button in sync and let the user flip + persist their choice. */
+    function applyTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      const glyph = document.getElementById('theme-glyph');
+      const label = document.getElementById('theme-label');
+      if (glyph) glyph.textContent = theme === 'light' ? '☀' : '☾';
+      if (label) label.textContent = theme === 'light' ? 'Light' : 'Dark';
+    }
+    function toggleTheme() {
+      const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      applyTheme(next);
+      try { localStorage.setItem(LS_THEME, next); } catch (e) { }
+    }
+    // Sync the toggle button with whatever theme <head> already applied.
+    applyTheme(document.documentElement.dataset.theme || 'dark');
 
     // Domains follow the kananinirav / Maarek course table-of-contents chapters.
     // Each question's `domain` is one of these codes; badge colors live in the CSS above.
