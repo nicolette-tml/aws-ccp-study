@@ -305,7 +305,7 @@ window.QUESTION_FILES.push({
         "Increased agility.",
         "AWS holds responsibility for security in the cloud."
       ],
-      correctAnswer: [2, 3],
+      correctAnswer: [1, 3],
       explanation: "Two immediate benefits of the AWS Cloud are that capital expenses are replaced with variable expenses, since customers pay only for what they use instead of investing upfront in hardware, and increased agility, since resources can be provisioned in minutes. Cloud adoption typically reduces rather than increases IT staffing needs for infrastructure, users do not control the underlying physical infrastructure in the cloud, and AWS holding responsibility for security of the cloud is a shared-responsibility detail rather than the immediate benefit being described here."
     },
     {

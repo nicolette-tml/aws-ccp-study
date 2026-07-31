@@ -60,7 +60,7 @@ window.QUESTION_FILES.push({
       domain: "CMP",
       topic: "fargate",
       type: "single",
-      question: "You would like to launch Docker containers in AWS without worrying about provisioning or managing any infrastructure. The Docker containers will be used to host a heavy workloads to serve different types of requests. Some requests may need up to 30 minutes to be completed. Which AWS service should you use to run Docker containers in a Serverless way and satisfy the requirements?",
+      question: "You would like to launch Docker containers in AWS without worrying about provisioning or managing any infrastructure. The Docker containers will be used to host a heavy workload to serve different types of requests. Some requests may need up to 30 minutes to be completed. Which AWS service should you use to run Docker containers in a Serverless way and satisfy the requirements?",
       options: ["ECS", "Fargate", "ECR", "Lambda"],
       correctAnswer: [1],
       explanation: "Fargate allows you to launch Docker containers on AWS without provisioning or managing infrastructure, making it fully serverless and suitable for long-running workloads up to 30 minutes. ECS requires you to manage EC2 instances, ECR is only a container registry for storing images, and Lambda has a maximum execution time of 15 minutes."
