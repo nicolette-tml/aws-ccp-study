@@ -719,7 +719,7 @@ window.QUESTION_FILES.push({
         "Providing a list of users approved for data center access",
         "Managing application software updates"
       ],
-      correctAnswer: [2],
+      correctAnswer: [3],
       explanation: "When running an application in the AWS Cloud, the customer remains responsible for managing application software updates. AWS is responsible for managing the underlying physical hardware and updating the hypervisor, and AWS also controls and manages the list of personnel approved for physical data-center access."
     },
     {

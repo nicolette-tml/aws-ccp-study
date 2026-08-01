@@ -377,7 +377,7 @@ window.QUESTION_FILES.push({
       domain: "IAM",
       topic: "access-keys",
       type: "single",
-      question: "Access keys in AWS Identity and Access Management (IM1) are used to:",
+      question: "Access keys in AWS Identity and Access Management (IAM) are used to:",
       options: [
         "Log in to the AWS Management Console.",
         "Make programmatic calls to AWS from AWS APIs.",
