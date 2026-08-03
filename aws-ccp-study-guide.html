@@ -743,6 +743,91 @@
       gap: 8px;
     }
 
+    /* ---- Exam mode ---- */
+    .exam-toggle-row {
+      margin-bottom: 22px;
+    }
+
+    .exam-toggle-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      margin-top: 6px;
+    }
+
+    .flag-btn {
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-family: var(--mono);
+      padding: 8px 14px;
+      border-radius: 6px;
+      flex: none;
+      transition: all .15s ease;
+    }
+
+    .flag-btn:hover:not(.flagged) {
+      color: var(--text);
+    }
+
+    .flag-btn.flagged {
+      color: var(--amber);
+      border-color: var(--amber-dim);
+      background: rgba(232, 163, 61, 0.12);
+    }
+
+    .nav-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 18px;
+    }
+
+    .nav-cell {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all .12s ease;
+    }
+
+    .nav-cell:hover {
+      color: var(--text);
+      border-color: var(--cyan-dim);
+    }
+
+    .nav-cell.answered {
+      background: rgba(95, 179, 179, 0.12);
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
+    }
+
+    .nav-cell.current {
+      box-shadow: 0 0 0 2px var(--amber);
+      color: var(--amber);
+      border-color: var(--amber-dim);
+    }
+
+    .nav-cell.flagged::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
     .results-card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -806,6 +891,27 @@
     .review-item .ra .wrong {
       color: var(--error);
       text-decoration: line-through;
+    }
+
+    .review-item .ra .right {
+      color: var(--success);
+    }
+
+    .review-item.is-correct {
+      border-left: 3px solid var(--success);
+    }
+
+    .review-item.is-incorrect {
+      border-left: 3px solid var(--error);
+    }
+
+    .review-item .rexplain {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-soft);
+      color: var(--text-dim);
+      font-size: 12.5px;
+      line-height: 1.55;
     }
 
     /* ---------- Bank manager ---------- */
@@ -1260,6 +1366,7 @@
     let showBankPanel = false;
     let quizMode = 'revision';   // 'revision' (mixed pool, filter by domain) | 'paper' (one full paper)
     let selectedPaperId = null;  // active paper in 'paper' mode; defaults to first available
+    let examMode = false;        // when true: hide scoring until submit, allow free navigation + flags
 
     function domainCounts() {
       const counts = {};
@@ -1344,6 +1451,14 @@
         <button class="${quizMode === 'revision' ? 'active' : ''}" onclick="setQuizMode('revision')">Revision (mixed)</button>
       </div>
 
+      <div class="exam-toggle-row">
+        <div class="mode-toggle" id="exam-toggle">
+          <button class="${!examMode ? 'active' : ''}" onclick="setExamMode(false)">Instant feedback</button>
+          <button class="${examMode ? 'active' : ''}" onclick="setExamMode(true)">Exam mode</button>
+        </div>
+        <div class="exam-toggle-hint">${examMode ? 'Scores hidden until you submit. Navigate freely, flag questions, change answers.' : 'Grades each question the moment you answer.'}</div>
+      </div>
+
       ${modeBody}
 
       <div class="stats-strip">
@@ -1403,6 +1518,7 @@
     }
     function toggleBankPanel() { showBankPanel = !showBankPanel; renderQuizSetup(); }
     function setQuizMode(mode) { quizMode = mode; renderQuizSetup(); }
+    function setExamMode(v) { examMode = v; renderQuizSetup(); }
     function resetProgress() {
       if (!confirm('Reset all revision progress (seen/correct/level tracking)? Quiz history is kept.')) return;
       stats = {}; saveStats(stats); renderQuizSetup(); showToast('Progress reset');
@@ -1485,12 +1601,16 @@
         mode: meta.mode,
         paperName: meta.paperName || null,
         unlimited: !!meta.unlimited,
-        answeredCurrent: false
+        answeredCurrent: false,
+        examMode: examMode,
+        selections: examMode ? new Array(questions.length).fill(null) : null,
+        flagged: examMode ? new Set() : null
       };
       renderQuizQuestion();
     }
 
     function renderQuizQuestion() {
+      if (quizState.examMode) return renderExamQuestion();
       const wrap = document.getElementById('quiz-wrap');
       const st = quizState;
       const q = st.questions[st.index];
@@ -1530,6 +1650,65 @@
         </div>
         <button class="primary-btn" id="next-btn" disabled onclick="nextQuestion()">${st.unlimited || st.index !== st.questions.length - 1 ? 'Next' : 'Finish'} →</button>
       </div>
+    </div>
+  `;
+    }
+
+    /* Exam mode: collect answers with no grading. Free navigation, flags, and a
+       navigator grid. Scoring happens only at finishQuiz(). */
+    function renderExamQuestion() {
+      const wrap = document.getElementById('quiz-wrap');
+      const st = quizState;
+      const q = st.questions[st.index];
+      const total = st.questions.length;
+      const pct = Math.round((st.index) / total * 100);
+      const isLast = st.index === total - 1;
+
+      const optionOrder = q._order || (q._order = shuffle(q.choices.map((c, i) => i)));
+      const isMulti = q.type === 'multiple-select';
+      const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
+      const picked = new Set(st.selections[st.index] || []);
+      const isFlagged = st.flagged.has(st.index);
+      const answeredCount = st.selections.filter(s => s && s.length).length;
+
+      wrap.innerHTML = `
+    <div class="quiz-header">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="q-counter">${st.index + 1} / ${total} · ${answeredCount} answered</div>
+    </div>
+    <div class="question-card">
+      ${isMulti ? `<div class="multi-hint">Select ${nAnswers}</div>` : ''}
+      ${q.deprecated ? `<div class="deprecated-badge">⚠️ ${escapeHtml(q.deprecated)} is deprecated — no longer on the current exam</div>` : ''}
+      <p class="q-text">${escapeHtml(q.q)}</p>
+      <div class="choices" id="choices">
+        ${optionOrder.map(i => `
+          <div class="choice ${picked.has(i) ? 'picked' : ''}" data-idx="${i}" onclick="examPick(${i})">
+            <span class="letter">${optionOrder.indexOf(i) + 1}</span>
+            <span>${escapeHtml(q.choices[i])}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="quiz-nav">
+        <div class="quiz-nav-left">
+          <button class="ghost-btn" style="flex:none; padding:8px 14px;" onclick="prevQuestion()" ${st.index === 0 ? 'disabled' : ''}>← Prev</button>
+          <button class="flag-btn ${isFlagged ? 'flagged' : ''}" onclick="toggleFlag()">${isFlagged ? '⚑ Flagged' : '⚐ Flag'}</button>
+        </div>
+        ${isLast
+          ? `<button class="primary-btn" id="submit-btn" onclick="finishQuiz()">Submit exam →</button>`
+          : `<button class="primary-btn" id="next-btn" onclick="nextQuestion()">Next →</button>`}
+      </div>
+    </div>
+    <div class="nav-grid" id="nav-grid">
+      ${st.questions.map((_, i) => {
+        const answered = st.selections[i] && st.selections[i].length;
+        const cls = [
+          'nav-cell',
+          i === st.index ? 'current' : '',
+          answered ? 'answered' : '',
+          st.flagged.has(i) ? 'flagged' : ''
+        ].filter(Boolean).join(' ');
+        return `<button class="${cls}" onclick="gotoQuestion(${i})">${i + 1}</button>`;
+      }).join('')}
     </div>
   `;
     }
@@ -1602,8 +1781,48 @@
       gradeCurrent(Array.from(st.picked));
     }
 
+    /* Exam mode: record a pick (no grading). Single-choice replaces the selection;
+       multi-select toggles membership, capped at the number of correct answers. */
+    function examPick(idx) {
+      const st = quizState;
+      const q = st.questions[st.index];
+      const isMulti = q.type === 'multiple-select';
+      const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
+      if (isMulti) {
+        const cur = new Set(st.selections[st.index] || []);
+        if (cur.has(idx)) cur.delete(idx);
+        else { if (cur.size >= nAnswers) return; cur.add(idx); }
+        st.selections[st.index] = Array.from(cur);
+      } else {
+        st.selections[st.index] = [idx];
+      }
+      renderExamQuestion();
+    }
+
+    function prevQuestion() {
+      const st = quizState;
+      if (st.index > 0) { st.index--; renderQuizQuestion(); }
+    }
+
+    function gotoQuestion(i) {
+      const st = quizState;
+      if (i >= 0 && i < st.questions.length) { st.index = i; renderQuizQuestion(); }
+    }
+
+    function toggleFlag() {
+      const st = quizState;
+      if (st.flagged.has(st.index)) st.flagged.delete(st.index);
+      else st.flagged.add(st.index);
+      renderExamQuestion();
+    }
+
     function nextQuestion() {
       const st = quizState;
+      if (st.examMode) {
+        if (st.index < st.questions.length - 1) { st.index++; renderQuizQuestion(); }
+        else finishQuiz();
+        return;
+      }
       st.index++;
       st.answeredCurrent = false;
       if (st.index >= st.questions.length) {
@@ -1624,6 +1843,27 @@
 
       const q = st.questions[st.index];
       const isMulti = q.type === 'multiple-select';
+
+      // Exam mode: number keys pick (no grade), arrows navigate, f flags,
+      // Enter advances (or submits on the last question).
+      if (st.examMode) {
+        if (/^[1-9]$/.test(e.key)) {
+          const pos = parseInt(e.key, 10) - 1;
+          const order = q._order || [];
+          if (pos >= order.length) return;
+          e.preventDefault();
+          examPick(order[pos]);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault(); prevQuestion();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault(); nextQuestion();
+        } else if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault(); toggleFlag();
+        } else if (e.key === 'Enter') {
+          e.preventDefault(); nextQuestion();
+        }
+        return;
+      }
 
       if (/^[1-9]$/.test(e.key)) {
         if (st.answeredCurrent) return;            // already graded; ignore
@@ -1654,6 +1894,32 @@
 
     function finishQuiz() {
       const st = quizState;
+
+      // Exam mode: nothing has been graded yet. Build the answer records now,
+      // computing correctness and updating spaced-repetition stats once per question.
+      if (st.examMode) {
+        st.answers = st.questions.map((q, i) => {
+          const selected = (st.selections[i] || []).slice();
+          const correctSet = new Set(q.correct);
+          const selectedSet = new Set(selected);
+          const isCorrect = correctSet.size === selectedSet.size &&
+            q.correct.every(c => selectedSet.has(c));
+
+          const s = stats[q.id] || { level: 0, seen: 0, correct: 0, wrong: 0, lastSeen: null };
+          s.seen++; s.lastSeen = Date.now();
+          if (isCorrect) { s.correct++; s.level = Math.min(5, s.level + 1); }
+          else { s.wrong++; s.level = 1; }
+          stats[q.id] = s;
+
+          return {
+            qId: q.id, q: q.q, domain: q.domain, type: q.type,
+            selected, correct: q.correct.slice(),
+            isCorrect, choices: q.choices, explain: q.explain
+          };
+        });
+        saveStats(stats);
+      }
+
       const correct = st.answers.filter(a => a.isCorrect).length;
       const total = st.answers.length;
       const pct = total ? Math.round(correct / total * 100) : 0;
@@ -1666,30 +1932,40 @@
 
       const missed = st.answers.filter(a => !a.isCorrect);
       const wrap = document.getElementById('quiz-wrap');
+
+      // Renders one review item. In exam mode we show every question (with an
+      // explanation and correct/incorrect styling); otherwise only missed ones.
+      const reviewItem = (a) => {
+        const sel = Array.isArray(a.selected) ? a.selected : (a.selectedIdx != null ? [a.selectedIdx] : []);
+        const cor = Array.isArray(a.correct) ? a.correct : (a.correctIdx != null ? [a.correctIdx] : []);
+        const yours = sel.length ? sel.map(i => escapeHtml(a.choices[i])).join(', ') : '(no answer)';
+        const right = cor.map(i => escapeHtml(a.choices[i])).join(', ');
+        const yoursCls = a.isCorrect ? 'right' : 'wrong';
+        return `
+            <div class="review-item ${a.isCorrect ? 'is-correct' : 'is-incorrect'}">
+              <div class="rq">${a.isCorrect ? '✓' : '✕'} ${escapeHtml(a.q)}</div>
+              <div class="ra">Your answer: <span class="${yoursCls}">${yours}</span> — Correct: <b>${right}</b></div>
+              ${st.examMode && a.explain ? `<div class="rexplain">${escapeHtml(a.explain)}</div>` : ''}
+            </div>
+          `;
+      };
+
+      const reviewSet = st.examMode ? st.answers : missed;
+      const reviewHeading = st.examMode ? 'Review all questions' : 'Review missed questions';
+
       wrap.innerHTML = `
     <div class="results-card">
-      <div style="font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em;">Quiz complete</div>
+      <div style="font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em;">${st.examMode ? 'Exam complete' : 'Quiz complete'}</div>
       <div class="results-score">${pct}%</div>
       <div class="results-sub">${correct} of ${total} correct</div>
       <div class="results-actions">
         <button class="primary-btn" onclick="renderQuizSetup()">Back to setup</button>
         <button class="ghost-btn" style="flex:none; padding:9px 16px;" onclick="retakeMissed()" ${missed.length === 0 ? 'disabled' : ''}>Retake missed (${missed.length})</button>
       </div>
-      ${missed.length ? `
-        <div style="text-align:left; font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">Review missed questions</div>
+      ${reviewSet.length ? `
+        <div style="text-align:left; font-family:var(--mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">${reviewHeading}</div>
         <div class="review-list">
-          ${missed.map(a => {
-        const sel = Array.isArray(a.selected) ? a.selected : (a.selectedIdx != null ? [a.selectedIdx] : []);
-        const cor = Array.isArray(a.correct) ? a.correct : (a.correctIdx != null ? [a.correctIdx] : []);
-        const yours = sel.length ? sel.map(i => escapeHtml(a.choices[i])).join(', ') : '(no answer)';
-        const right = cor.map(i => escapeHtml(a.choices[i])).join(', ');
-        return `
-            <div class="review-item">
-              <div class="rq">${escapeHtml(a.q)}</div>
-              <div class="ra">Your answer: <span class="wrong">${yours}</span> — Correct: <b>${right}</b></div>
-            </div>
-          `;
-      }).join('')}
+          ${reviewSet.map(reviewItem).join('')}
         </div>
       ` : `<p style="color:var(--success); font-size:13px;">Perfect score — nice work.</p>`}
     </div>
@@ -1700,7 +1976,13 @@
       const st = quizState;
       const missedIds = new Set(st.answers.filter(a => !a.isCorrect).map(a => a.qId));
       const questions = st.questions.filter(q => missedIds.has(q.id));
-      quizState = { questions, index: 0, answers: [], domains: st.domains, mode: st.mode, paperName: st.paperName, answeredCurrent: false };
+      quizState = {
+        questions, index: 0, answers: [], domains: st.domains, mode: st.mode,
+        paperName: st.paperName, answeredCurrent: false,
+        examMode: st.examMode,
+        selections: st.examMode ? new Array(questions.length).fill(null) : null,
+        flagged: st.examMode ? new Set() : null
+      };
       renderQuizQuestion();
     }
 
