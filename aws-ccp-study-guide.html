@@ -562,6 +562,55 @@
       white-space: nowrap;
     }
 
+    .mastery-meter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .mastery-lbl {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .mastery-pips {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .mastery-pip {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      transition: background .25s ease, border-color .25s ease;
+    }
+
+    .mastery-pip.filled {
+      background: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .mastery-meter.mastered .mastery-pip.filled {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .mastery-cap {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .mastery-meter.mastered .mastery-cap {
+      color: var(--success);
+    }
+
     .question-card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -1609,6 +1658,27 @@
       renderQuizQuestion();
     }
 
+    /* Builds the 5-pip mastery meter shown in the instant-feedback quiz header.
+       `lvl` is the question's Leitner level (0–5); level 5 = mastered. */
+    function masteryMeterHtml(lvl) {
+      const mastered = lvl >= 5;
+      const pips = Array.from({ length: 5 }, (_, i) =>
+        `<span class="mastery-pip ${i < lvl ? 'filled' : ''}"></span>`).join('');
+      const cap = mastered ? 'Mastered ✓' : `L${lvl}`;
+      return `<div class="mastery-meter ${mastered ? 'mastered' : ''}" id="mastery-meter" title="Mastery level ${lvl}/5">
+        <span class="mastery-lbl">Mastery</span>
+        <span class="mastery-pips">${pips}</span>
+        <span class="mastery-cap">${cap}</span>
+      </div>`;
+    }
+
+    /* Re-render the pips in place so a promotion is felt the moment it's earned. */
+    function updateMasteryMeter(lvl) {
+      const meter = document.getElementById('mastery-meter');
+      if (!meter) return;
+      meter.outerHTML = masteryMeterHtml(lvl);
+    }
+
     function renderQuizQuestion() {
       if (quizState.examMode) return renderExamQuestion();
       const wrap = document.getElementById('quiz-wrap');
@@ -1622,10 +1692,14 @@
 
       const nAnswers = Array.isArray(q.correct) ? q.correct.length : 1;
 
+      // Mastery level for this question (0–5). Missing/unseen -> 0. See stats schema.
+      const lvl = (stats[q.id] && stats[q.id].level) || 0;
+
       wrap.innerHTML = `
     <div class="quiz-header">
       <div class="progress-track"><div class="progress-fill" style="width:${st.unlimited ? 100 : pct}%"></div></div>
       <div class="q-counter">${st.unlimited ? `Q${st.index + 1} · unlimited (max ${st.questions.length})` : `${st.index + 1} / ${st.questions.length}`}</div>
+      ${masteryMeterHtml(lvl)}
     </div>
     <div class="question-card">
       ${isMulti ? `<div class="multi-hint">Select ${nAnswers} — then press Enter to check</div>` : ''}
@@ -1730,8 +1804,11 @@
       const s = stats[q.id] || { level: 0, seen: 0, correct: 0, wrong: 0, lastSeen: null };
       s.seen++; s.lastSeen = Date.now();
       if (isCorrect) { s.correct++; s.level = Math.min(5, s.level + 1); }
-      else { s.wrong++; s.level = 1; }
+      else { s.wrong++; s.level = Math.max(0, s.level - 1); }
       stats[q.id] = s; saveStats(stats);
+
+      // Reflect the new level in the header meter right away.
+      updateMasteryMeter(s.level);
 
       st.answers.push({
         qId: q.id, q: q.q, domain: q.domain, type: q.type,
@@ -1908,7 +1985,7 @@
           const s = stats[q.id] || { level: 0, seen: 0, correct: 0, wrong: 0, lastSeen: null };
           s.seen++; s.lastSeen = Date.now();
           if (isCorrect) { s.correct++; s.level = Math.min(5, s.level + 1); }
-          else { s.wrong++; s.level = 1; }
+          else { s.wrong++; s.level = Math.max(0, s.level - 1); }
           stats[q.id] = s;
 
           return {
