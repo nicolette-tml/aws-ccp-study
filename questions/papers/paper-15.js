@@ -474,7 +474,7 @@ window.QUESTION_FILES.push({
         "Amazon ElastiCache",
         "AWS Fargate"
       ],
-      correctAnswer: [0],
+      correctAnswer: [1],
       explanation: "Amazon EC2 is Infrastructure as a Service, so the customer is responsible for the guest operating system configuration, security patching, and networking on their instances. Amazon RDS, ElastiCache, and AWS Fargate are managed services where AWS takes on operating system maintenance and patching, leaving less operational burden on the customer."
     },
     {
